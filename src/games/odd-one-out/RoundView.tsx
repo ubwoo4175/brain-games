@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import type { RoundViewProps } from '../../engine/types'
 import type { OddOneOutRound } from './types'
 import './style.css'
@@ -16,7 +16,10 @@ export function RoundView({ round, onAnswer }: RoundViewProps<OddOneOutRound>) {
   return (
     <div className="oo">
       <p className="prompt prompt--strong">다른 것 하나를 찾아 눌러주세요</p>
-      <div className="oo__grid" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+      <div
+        className="oo__grid"
+        style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, '--cols': cols, '--rows': Math.ceil(count / cols) } as CSSProperties}
+      >
         {Array.from({ length: count }, (_, i) => {
           const isOdd = i === oddIndex
           const state = picked === null ? '' : isOdd ? ' oo__cell--correct' : picked === i ? ' oo__cell--wrong' : ''

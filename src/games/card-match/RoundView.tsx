@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { playFeedback } from '../../engine/feedback'
 import type { RoundViewProps } from '../../engine/types'
 import { missAllowance } from './logic'
@@ -51,7 +51,10 @@ export function RoundView({ round, onAnswer, settings }: RoundViewProps<CardMatc
   return (
     <div className="cm">
       <p className="prompt prompt--strong">{preview ? '잘 보세요' : '같은 그림 두 장을 찾아주세요'}</p>
-      <div className="cm__grid" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+      <div
+        className="cm__grid"
+        style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, '--cols': cols, '--rows': Math.ceil(cards.length / cols) } as CSSProperties}
+      >
         {cards.map((c, i) => {
           const faceUp = preview || matched[i] || open.includes(i)
           return (

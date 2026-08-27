@@ -23,7 +23,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.7rem;
-  max-width: 20rem;
+  max-width: min(20rem, calc(100dvh - 15rem));
   width: 100%;
   margin: 0 auto;
 }

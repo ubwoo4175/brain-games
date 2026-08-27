@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type CSSProperties } from 'react'
 import { playFeedback } from '../../engine/feedback'
 import type { RoundViewProps } from '../../engine/types'
 import { MISS_ALLOWANCE } from './logic'
@@ -36,7 +36,10 @@ export function RoundView({ round, onAnswer, settings }: RoundViewProps<NumberTo
       <p className="prompt prompt--strong">
         <span className="nt__next">{next}</span> 을(를) 눌러주세요 — 1부터 {n}까지 순서대로!
       </p>
-      <div className="nt__grid" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+      <div
+        className="nt__grid"
+        style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, '--cols': cols, '--rows': Math.ceil(cells.length / cols) } as CSSProperties}
+      >
         {cells.map((v, i) => {
           if (v === null) return <span key={i} className="nt__empty" aria-hidden />
           const done = v < next

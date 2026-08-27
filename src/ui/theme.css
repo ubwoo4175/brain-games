@@ -39,7 +39,10 @@ html {
 }
 @media (min-width: 600px) {
   html {
+    /* 넓은 화면(폴드 펼침)은 24px 기준. 단, 정사각형에 가까워 세로가 낮으면
+       (브라우저 주소창·내비바 포함) 높이에 비례해 줄여서 아래가 잘리지 않게 한다. */
     font-size: 24px;
+    font-size: clamp(19px, 2.8dvh, 24px);
   }
 }
 html[data-text-size='large'] {
@@ -48,6 +51,7 @@ html[data-text-size='large'] {
 @media (min-width: 600px) {
   html[data-text-size='large'] {
     font-size: 27.5px;
+    font-size: clamp(21.5px, 3.2dvh, 27.5px);
   }
 }
 

@@ -8,6 +8,9 @@
 .oo__grid {
   display: grid;
   gap: 0.5rem;
+  /* 칸(정사각)×줄 수가 화면 높이를 넘지 않게 폭을 제한 (폴드 정사각 화면 대응) */
+  width: min(100%, calc((100dvh - 13rem) * var(--cols, 4) / var(--rows, 4)));
+  margin: 0 auto;
 }
 .oo__cell {
   aspect-ratio: 1 / 1;

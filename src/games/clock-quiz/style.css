@@ -15,7 +15,7 @@
   animation: pop 0.18s ease;
 }
 .ck__face {
-  width: min(13rem, 60vw);
+  width: min(13rem, 60vw, calc(100dvh - 21rem));
   height: auto;
 }
 .ck__rim {
