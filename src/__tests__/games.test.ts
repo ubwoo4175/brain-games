@@ -15,6 +15,7 @@ import { makeClockRound } from '../games/clock-quiz/logic'
 import { formatTime } from '../games/clock-quiz/types'
 import { GAMES } from '../games'
 import { createRng } from '../shared/rng'
+import { mergeSessions, pickNewerGameSettings } from '../data/sync'
 
 describe('초성', () => {
   it('한글 → 초성', () => {
@@ -203,5 +204,34 @@ describe('게임 등록', () => {
         expect(() => g.makeRound(lv, rng, { roundIndex: 0 })).not.toThrow()
       }
     }
+  })
+})
+
+describe('동기화 병합', () => {
+  const sess = (id: string, startedAt: string) => ({
+    id,
+    userId: 'u',
+    gameId: 'g',
+    startedAt,
+    durationMs: 1000,
+    levelStart: 1,
+    levelEnd: 1,
+    correct: 1,
+    total: 1,
+    points: 10,
+  })
+  it('세션은 id로 합집합, 최신순 정렬', () => {
+    const a = [sess('1', '2026-01-02'), sess('2', '2026-01-01')]
+    const b = [sess('2', '2026-01-01'), sess('3', '2026-01-03')]
+    const m = mergeSessions(a, b)
+    expect(m.map((s) => s.id)).toEqual(['3', '1', '2'])
+  })
+  it('게임 설정은 updatedAt 최신이 이김', () => {
+    const old = { userId: 'u', gameId: 'g', level: 3, updatedAt: '2026-01-01' }
+    const nu = { userId: 'u', gameId: 'g', level: 5, updatedAt: '2026-02-01' }
+    expect(pickNewerGameSettings(old, nu)).toBe(nu)
+    expect(pickNewerGameSettings(nu, old)).toBe(nu)
+    expect(pickNewerGameSettings(null, old)).toBe(old)
+    expect(pickNewerGameSettings(null, null)).toBeNull()
   })
 })

@@ -62,7 +62,8 @@ src/
 
 ## 데이터 규칙
 
-- 화면/게임 코드는 `getStorage()`가 주는 `StorageAdapter` 인터페이스만 사용. `localStorage` 직접 접근 금지 (auth/AnonymousAuth와 LocalStorageAdapter 내부 제외).
+- 화면/게임 코드는 `getStorage()`가 주는 `StorageAdapter` 인터페이스만 사용. `localStorage` 직접 접근 금지 (auth/*, data/LocalStorageAdapter, data/SupabaseSyncAdapter 내부 제외).
+- 저장 구조는 **로컬 우선 + 백그라운드 동기화**: 읽기/쓰기는 항상 로컬(오프라인 보장), 카카오 로그인 상태면 쓰기를 Supabase에 upsert(실패분은 큐 재시도), 앱 시작 시 `syncDown`으로 병합. Supabase 환경변수(`VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`)가 없으면 로컬 전용으로 동작. 설정법: `docs/SUPABASE_SETUP.md`, 스키마: `supabase/schema.sql` (모델 바꾸면 이 파일도 같이).
 - 모든 기록에 `userId`가 붙는다. 지금은 익명 UUID. 나중에 카카오 로그인 시 익명 기록을 계정으로 병합한다는 전제.
 - 저장 키 prefix `bg:v1`. 모델을 호환 안 되게 바꾸면 `v2`로 올리고 마이그레이션을 쓴다.
 - 데이터 모델은 `src/data/types.ts`가 유일한 정의. 서버(Supabase) 테이블도 이 모델을 그대로 옮긴다.
@@ -71,7 +72,7 @@ src/
 
 1. ✅ 1단계: 4개 게임(거꾸로 숫자·지는 가위바위보·빠른 암산·초성 퀴즈) + 로컬 저장 + 적응 난이도 + PWA + GitHub Pages
 2. 2단계: 통계 강화(주간 그래프), 소리·진동 다듬기. 게임 추가는 완료 ✅ (스트룹 · 카드 짝 맞추기 · 숫자 순서 터치 · 사이먼 · 다른 것 찾기 · 시계 읽기). 남은 후보: 오늘의 지남력 체크(날짜·요일 출석 확인, 게임보다는 홈/콘텐츠 슬롯 성격)
-3. 3단계: Supabase + 카카오 로그인 (`SupabaseAdapter`, `KakaoAuth` 구현 → `data/index.ts`, `auth/index.ts`에서 교체), 기기 간 동기화
+3. 3단계: Supabase + 카카오 로그인 — 코드 완료 ✅ (`SupabaseSyncAdapter`, `SupabaseAuth`, 익명 기록 병합). 서버 쪽 설정은 `docs/SUPABASE_SETUP.md` 절차 필요
 4. 4단계: 콘텐츠 슬롯에 협찬 카드 + 회상 문제(광고 회상률 모델), 필요 시 Capacitor/TWA로 앱 출시
 
 ## 작업 습관

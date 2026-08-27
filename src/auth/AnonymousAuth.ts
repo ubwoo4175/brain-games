@@ -3,6 +3,15 @@ import type { AuthProvider, AuthUser } from './AuthProvider'
 
 const KEY = 'bg:v1:anonymousUserId'
 
+/** 이 기기에 저장된 익명 userId (없으면 null). 카카오 로그인 시 기록 병합에 사용. */
+export function peekAnonymousUserId(): string | null {
+  try {
+    return localStorage.getItem(KEY)
+  } catch {
+    return null
+  }
+}
+
 export class AnonymousAuth implements AuthProvider {
   async getCurrentUser(): Promise<AuthUser> {
     let id = localStorage.getItem(KEY)

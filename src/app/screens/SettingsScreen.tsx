@@ -20,8 +20,9 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
 }
 
 export function SettingsScreen({ onBack }: { onBack: () => void }) {
-  const { settings, updateSettings, levels, setLevel, resetAll } = useApp()
+  const { user, settings, updateSettings, levels, setLevel, resetAll, cloud } = useApp()
   const [confirmReset, setConfirmReset] = useState(false)
+  const [confirmSignOut, setConfirmSignOut] = useState(false)
 
   return (
     <div className="stage">
@@ -104,6 +105,54 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
             )
           })}
         </Card>
+
+        {cloud.available && (
+          <>
+            <div className="section-title">계정</div>
+            <Card>
+              {user.provider === 'anonymous' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <div className="setting__sub" style={{ textAlign: 'center' }}>
+                    카카오로 로그인하면 폰을 바꿔도
+                    <br />
+                    기록과 난이도가 그대로 유지돼요
+                  </div>
+                  <BigButton className="kakao-btn" full size="lg" onClick={() => void cloud.signIn()}>
+                    <span aria-hidden>💬</span> 카카오로 로그인
+                  </BigButton>
+                </div>
+              ) : !confirmSignOut ? (
+                <div className="setting">
+                  <div>
+                    <div className="setting__label">카카오 계정{user.displayName ? ` · ${user.displayName}` : ''}</div>
+                    <div className="setting__sub">기록이 자동으로 안전하게 저장되고 있어요</div>
+                  </div>
+                  <BigButton variant="secondary" onClick={() => setConfirmSignOut(true)}>
+                    로그아웃
+                  </BigButton>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div className="setting__label" style={{ textAlign: 'center' }}>
+                    로그아웃할까요? 기록은 서버에 안전하게 남아요.
+                  </div>
+                  <BigButton
+                    variant="danger"
+                    full
+                    onClick={() => {
+                      void cloud.signOut()
+                    }}
+                  >
+                    네, 로그아웃할게요
+                  </BigButton>
+                  <BigButton variant="secondary" full onClick={() => setConfirmSignOut(false)}>
+                    아니요
+                  </BigButton>
+                </div>
+              )}
+            </Card>
+          </>
+        )}
 
         <div className="section-title">데이터</div>
         <Card>

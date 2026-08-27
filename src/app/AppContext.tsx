@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { getAuth, type AuthUser } from '../auth'
+import { peekAnonymousUserId } from '../auth/AnonymousAuth'
 import { getStorage, type AppSettings, type StorageAdapter } from '../data'
 import { DEFAULT_APP_SETTINGS } from '../data/types'
 import { GAMES } from '../games'
@@ -14,6 +15,8 @@ interface AppContextValue {
   levels: Record<string, number>
   setLevel: (gameId: string, level: number) => Promise<void>
   resetAll: () => Promise<void>
+  /** 서버 동기화(카카오 로그인). available=false 면 로그인 UI를 숨긴다. */
+  cloud: { available: boolean; signIn: () => Promise<void>; signOut: () => Promise<void> }
 }
 
 const Ctx = createContext<AppContextValue | null>(null)
@@ -33,7 +36,19 @@ export function AppProvider({ children, fallback }: { children: ReactNode; fallb
   useEffect(() => {
     let cancelled = false
     ;(async () => {
+      // 브라우저가 저장공간을 함부로 정리하지 않게 보호 요청 (지원 브라우저에서만)
+      try {
+        void navigator.storage?.persist?.()
+      } catch {
+        /* 미지원 브라우저 */
+      }
       const u = await getAuth().getCurrentUser()
+      if (u.provider !== 'anonymous') {
+        // 첫 로그인이면 이 기기의 익명 기록을 계정으로 병합하고, 서버 기록과 동기화
+        const gameIds = GAMES.map((g) => g.id)
+        await storage.migrateFrom(peekAnonymousUserId(), u.userId, gameIds)
+        await storage.syncDown(u.userId, gameIds)
+      }
       const profile = await storage.getProfile(u.userId)
       if (!profile) {
         await storage.saveProfile({ userId: u.userId, nickname: '', createdAt: new Date().toISOString() })
@@ -80,6 +95,27 @@ export function AppProvider({ children, fallback }: { children: ReactNode; fallb
     [user, storage],
   )
 
+  // 오프라인에서 쌓인 기록을 온라인 복귀 시 서버로
+  useEffect(() => {
+    if (!user) return
+    const onOnline = () => void storage.flushQueue(user.userId)
+    window.addEventListener('online', onOnline)
+    return () => window.removeEventListener('online', onOnline)
+  }, [user, storage])
+
+  const cloud = useMemo(
+    () => ({
+      available: getAuth().canUseCloud(),
+      signIn: () => getAuth().signInWithKakao(),
+      signOut: async () => {
+        await getAuth().signOut()
+        // 익명 상태로 처음부터 다시 (상태 꼬임 방지를 위해 새로고침이 가장 안전)
+        window.location.reload()
+      },
+    }),
+    [],
+  )
+
   const resetAll = useCallback(async () => {
     if (!user) return
     await storage.clearAll(user.userId)
@@ -93,6 +129,6 @@ export function AppProvider({ children, fallback }: { children: ReactNode; fallb
   if (!user) return <>{fallback}</>
 
   return (
-    <Ctx.Provider value={{ user, storage, settings, updateSettings, levels, setLevel, resetAll }}>{children}</Ctx.Provider>
+    <Ctx.Provider value={{ user, storage, settings, updateSettings, levels, setLevel, resetAll, cloud }}>{children}</Ctx.Provider>
   )
 }

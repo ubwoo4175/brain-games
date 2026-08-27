@@ -1,14 +1,14 @@
-import { LocalStorageAdapter } from './LocalStorageAdapter'
-import type { StorageAdapter } from './StorageAdapter'
+import { SupabaseSyncAdapter } from './SupabaseSyncAdapter'
 
 /**
  * 앱 전체가 공유하는 저장소 인스턴스.
- * 서버 저장소로 바꿀 때는 여기서 new SupabaseAdapter() 로 교체하면 됩니다.
+ * SupabaseSyncAdapter 는 로컬 우선으로 동작하고, Supabase 설정 + 카카오 로그인이 있을 때만
+ * 백그라운드로 서버에 동기화합니다. 미설정이면 예전 LocalStorageAdapter 와 완전히 같게 동작.
  */
-let instance: StorageAdapter | null = null
+let instance: SupabaseSyncAdapter | null = null
 
-export function getStorage(): StorageAdapter {
-  if (!instance) instance = new LocalStorageAdapter()
+export function getStorage(): SupabaseSyncAdapter {
+  if (!instance) instance = new SupabaseSyncAdapter()
   return instance
 }
 

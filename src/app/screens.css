@@ -417,3 +417,10 @@
 .splash__icon {
   font-size: 4rem;
 }
+
+/* ---------- 설정: 카카오 로그인 버튼 (브랜드 색) ---------- */
+.kakao-btn {
+  background: #fee500 !important;
+  border-color: #fee500 !important;
+  color: #191919 !important;
+}

@@ -51,6 +51,13 @@ export class LocalStorageAdapter implements StorageAdapter {
     if (list.length > MAX_SESSIONS) list.length = MAX_SESSIONS
     write(k, list)
   }
+  /** 동기화 병합용: 세션 목록을 통째로 교체 (최신순으로 저장) */
+  async replaceSessions(userId: string, sessions: SessionRecord[]) {
+    const sorted = [...sessions].sort((a, b) => (a.startedAt < b.startedAt ? 1 : -1))
+    if (sorted.length > MAX_SESSIONS) sorted.length = MAX_SESSIONS
+    write(key('sessions', userId), sorted)
+  }
+
   async listSessions(userId: string, gameId?: string, limit = 100) {
     const list = read<SessionRecord[]>(key('sessions', userId), [])
     const filtered = gameId ? list.filter((s) => s.gameId === gameId) : list
