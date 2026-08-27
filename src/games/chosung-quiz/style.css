@@ -1,0 +1,43 @@
+.cq {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  flex: 1;
+  justify-content: center;
+}
+.cq__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 8rem;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 0.8rem;
+  animation: pop 0.18s ease;
+}
+.cq__chosung {
+  font-size: 3.4rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-align: center;
+  line-height: 1.2;
+}
+.cq__chosung--long {
+  font-size: 2.2rem;
+  letter-spacing: 0.08em;
+}
+.cq__hint {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--info);
+  background: #dbeafe;
+  padding: 0.2rem 0.8rem;
+  border-radius: 999px;
+}
+.cq__btn--long {
+  font-size: 1.2rem !important;
+  min-height: 3.6rem !important;
+}

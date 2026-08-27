@@ -1,0 +1,240 @@
+/* ---------- BigButton ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: var(--tap);
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  border: 0.15rem solid transparent;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  transition:
+    transform 0.08s ease,
+    background 0.12s ease;
+  text-align: center;
+  word-break: keep-all;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.btn--full {
+  width: 100%;
+}
+.btn--lg {
+  min-height: 4rem;
+  font-size: 1.45rem;
+}
+.btn--xl {
+  min-height: 4.8rem;
+  font-size: 1.8rem;
+}
+
+.btn--primary {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+  box-shadow: var(--shadow);
+}
+.btn--primary:active {
+  background: var(--primary-press);
+}
+.btn--secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--line);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: transparent;
+  font-weight: 600;
+}
+.btn--danger {
+  background: var(--surface);
+  color: var(--wrong);
+  border-color: var(--wrong);
+}
+/* 4지선다 등 선택지 */
+.btn--choice {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--line);
+  box-shadow: var(--shadow);
+}
+.btn--state-correct {
+  background: var(--correct-bg) !important;
+  border-color: var(--correct) !important;
+  color: var(--correct) !important;
+}
+.btn--state-wrong {
+  background: var(--wrong-bg) !important;
+  border-color: var(--wrong) !important;
+  color: var(--wrong) !important;
+  animation: shake 0.3s ease;
+}
+
+/* ---------- TopBar ---------- */
+.topbar {
+  display: grid;
+  grid-template-columns: var(--tap) 1fr var(--tap);
+  align-items: center;
+  min-height: var(--tap);
+  margin-bottom: 0.5rem;
+}
+.topbar__back {
+  width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  background: transparent;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.topbar__back:active {
+  background: var(--surface-2);
+}
+.topbar__title {
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topbar__right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---------- ProgressBar ---------- */
+.progress {
+  height: 0.6rem;
+  background: var(--line-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress__fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.2s linear;
+}
+.progress__fill--warn {
+  background: var(--wrong);
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+}
+
+/* ---------- NumPad ---------- */
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+.numpad .btn {
+  min-height: 3.6rem;
+  font-size: 1.7rem;
+}
+.numpad__submit {
+  grid-column: 1 / -1;
+}
+
+/* ---------- Choice grid (2×2 또는 1열) ---------- */
+.choices {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: 1fr 1fr;
+}
+.choices--col {
+  grid-template-columns: 1fr;
+}
+.choices .btn {
+  min-height: 4rem;
+  font-size: 1.5rem;
+}
+
+/* ---------- Feedback overlay ---------- */
+.feedback {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 50;
+  animation: fadeIn 0.12s ease;
+}
+.feedback__badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1rem 1.6rem;
+  border-radius: 1.5rem;
+  font-size: 2rem;
+  font-weight: 800;
+  animation: pop 0.25s ease;
+  box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.18);
+}
+.feedback__badge--correct {
+  background: var(--correct);
+  color: #fff;
+}
+.feedback__badge--wrong {
+  background: var(--wrong);
+  color: #fff;
+}
+.feedback__badge--levelup {
+  background: #f59e0b;
+  color: #1f1f1f;
+}
+.feedback__sub {
+  font-size: 1rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+.feedback__icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+/* ---------- 문제 표시 공통 ---------- */
+.prompt {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.prompt--strong {
+  color: var(--text);
+  font-size: 1.35rem;
+}
+.big-display {
+  text-align: center;
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  min-height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
