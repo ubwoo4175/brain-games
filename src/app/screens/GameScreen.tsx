@@ -13,6 +13,8 @@ interface Props {
 
 interface ResultInfo extends SessionSummary {
   previousBest: number
+  /** 이 게임을 처음 플레이했나 (이전 기록 없음) */
+  isFirstPlay: boolean
 }
 
 /** 화면이 꺼지지 않게 (지원 브라우저에서만) */
@@ -60,7 +62,7 @@ export function GameScreen({ game, onExit }: Props) {
         details: { avgResponseMs: Math.round(summary.score.avgResponseMs) },
       })
       await setLevel(game.id, summary.levelEnd)
-      setResult({ ...summary, previousBest })
+      setResult({ ...summary, previousBest, isFirstPlay: prev.length === 0 })
     },
     [storage, user.userId, game.id, setLevel],
   )
@@ -131,10 +133,10 @@ function SessionView({
   }
 
   if (state.phase === 'done' && result) {
-    const { score, levelStart, levelEnd, previousBest } = result
+    const { score, levelStart, levelEnd, previousBest, isFirstPlay } = result
     const acc = Math.round(score.accuracy * 100)
     const headline = acc >= 80 ? '훌륭해요! 🎉' : acc >= 50 ? '잘하셨어요! 👏' : '수고하셨어요! 🙂'
-    const isNewBest = score.points > previousBest && score.points > 0
+    const isNewBest = !isFirstPlay && score.points > previousBest && score.points > 0
     return (
       <div className="stage">
         <TopBar title={game.title} onBack={onExit} />
@@ -145,7 +147,7 @@ function SessionView({
             <small> 점</small>
           </div>
           <div className={`result__best${isNewBest ? ' result__best--new' : ''}`}>
-            {isNewBest ? '🏆 최고 기록 갱신!' : previousBest > 0 ? `최고 기록 ${previousBest}점` : '첫 기록이에요!'}
+            {isFirstPlay ? '첫 기록이에요!' : isNewBest ? '🏆 최고 기록 갱신!' : previousBest > 0 ? `최고 기록 ${previousBest}점` : '다음엔 더 잘될 거예요!'}
           </div>
           <div className="result__grid">
             <Card className="result__stat">

@@ -70,6 +70,10 @@ body {
   line-height: 1.35;
   color: var(--text);
   background: var(--bg);
+  /* 한국어 단어가 중간에 끊기지 않게 ("최고 점수" → "최고 점/수" 방지).
+     아주 긴 한 덩어리는 break-word 로 넘침만 막는다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
   /* 당겨서 새로고침 / 바운스 방지, 더블탭 확대 방지 */
   overscroll-behavior: none;
   touch-action: manipulation;
