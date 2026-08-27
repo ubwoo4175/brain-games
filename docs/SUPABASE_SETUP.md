@@ -1,21 +1,12 @@
-# Supabase + 카카오 로그인 설정 (한 번만 하면 됩니다)
+# Supabase + 카카오 로그인 설정
 
-코드는 이미 준비되어 있습니다. 아래 1~5를 순서대로 하고, 마지막에 나온 값 2개를 GitHub에 넣으면 끝입니다.
-값을 넣기 전까지 앱은 지금처럼 로컬 전용으로 동작하니, 중간에 멈춰도 아무 문제 없습니다.
+## ✅ 이미 완료된 것 (2026-08-27, Claude가 MCP로 처리)
 
-## 1. Supabase 프로젝트 만들기 (약 3분)
+- Supabase 프로젝트 생성: **brain-games** (서울 리전, ref: `fnqmizlykcmuigyldzre`)
+  - Project URL: `https://fnqmizlykcmuigyldzre.supabase.co`
+- 테이블 4개 + RLS 정책(`supabase/schema.sql`)은 Claude가 MCP로 적용 예정 — 아직이라면 SQL Editor 에 `supabase/schema.sql` 을 붙여넣고 Run 하면 됩니다 (여러 번 실행해도 안전)
 
-1. https://supabase.com/dashboard → **New project**
-2. Name: `brain-games` (자유), Region: **Northeast Asia (Seoul)**, DB 비밀번호는 아무거나 만들어 보관
-3. 생성 후 **Project Settings → API** 에서 두 값을 복사해 둡니다:
-   - **Project URL** (예: `https://abcd1234.supabase.co`)
-   - **anon public** key (긴 문자열. 공개되어도 되는 키입니다)
-
-## 2. 테이블 만들기 (약 1분)
-
-1. 왼쪽 메뉴 **SQL Editor** → **New query**
-2. 이 저장소의 [`supabase/schema.sql`](../supabase/schema.sql) 내용 전체를 붙여넣고 **Run**
-3. "Success" 가 나오면 완료 (Table Editor 에 profiles / game_settings / sessions / app_settings 4개가 보입니다)
+남은 것은 카카오 쪽 설정(아래 3~4)뿐입니다. 끝나기 전까지 앱은 지금처럼 로컬 전용으로 동작합니다.
 
 ## 3. 카카오 개발자 앱 만들기 (약 5분)
 
@@ -23,8 +14,7 @@
    - 앱 이름: `오늘의 두뇌운동`, 회사명: 자유
 2. 만든 앱 → **앱 설정 > 앱 키** 에서 **REST API 키** 복사해 두기
 3. **제품 설정 > 카카오 로그인** → 활성화 **ON**
-   - **Redirect URI 등록**: `https://<1번의 Project URL 호스트>/auth/v1/callback`
-     (예: `https://abcd1234.supabase.co/auth/v1/callback`)
+   - **Redirect URI 등록**: `https://fnqmizlykcmuigyldzre.supabase.co/auth/v1/callback`
 4. **제품 설정 > 카카오 로그인 > 보안** → **Client Secret** 발급 → 코드 복사, 상태 **사용함**
 5. **제품 설정 > 카카오 로그인 > 동의항목** → **닉네임** 을 "필수 동의"로 설정
    (이메일은 필요 없습니다 — 앱이 수집하지 않아요)
