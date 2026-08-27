@@ -1,0 +1,45 @@
+.ck {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  flex: 1;
+  justify-content: center;
+}
+.ck__card {
+  display: flex;
+  justify-content: center;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 0.8rem;
+  animation: pop 0.18s ease;
+}
+.ck__face {
+  width: min(13rem, 60vw);
+  height: auto;
+}
+.ck__rim {
+  fill: #fffdf8;
+  stroke: var(--line);
+  stroke-width: 2.5;
+}
+.ck__num {
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--text);
+  font-family: var(--font);
+}
+.ck__hand {
+  stroke: var(--text);
+  stroke-linecap: round;
+}
+.ck__hand--hour {
+  stroke-width: 5;
+}
+.ck__hand--minute {
+  stroke-width: 3;
+  stroke: var(--primary);
+}
+.ck__pin {
+  fill: var(--text);
+}

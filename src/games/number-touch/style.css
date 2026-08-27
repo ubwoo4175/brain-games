@@ -1,0 +1,48 @@
+.nt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  flex: 1;
+  justify-content: center;
+}
+.nt__next {
+  display: inline-block;
+  min-width: 2.2rem;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--primary);
+}
+.nt__grid {
+  display: grid;
+  gap: 0.5rem;
+}
+.nt__cell {
+  aspect-ratio: 1 / 1;
+  min-height: var(--tap);
+  border: 0.15rem solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 1.8rem;
+  font-weight: 800;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nt__cell:active {
+  transform: scale(0.95);
+}
+.nt__cell--done {
+  background: var(--correct-bg);
+  border-color: var(--correct);
+  color: var(--correct);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.nt__cell--shake {
+  animation: shake 0.3s ease;
+  border-color: var(--wrong);
+}
+.nt__empty {
+  aspect-ratio: 1 / 1;
+}

@@ -1,0 +1,46 @@
+.sm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  justify-content: center;
+}
+.sm__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.sm__dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--line-soft);
+}
+.sm__dot--done {
+  background: var(--correct);
+}
+.sm__pads {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  max-width: 20rem;
+  width: 100%;
+  margin: 0 auto;
+}
+.sm__pad {
+  aspect-ratio: 1 / 1;
+  border: 0.2rem solid rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  transition: transform 0.08s ease, filter 0.08s ease;
+}
+.sm__pad:disabled {
+  cursor: default;
+}
+.sm__pad:not(:disabled):active {
+  transform: scale(0.96);
+}
+.sm__pad--lit {
+  filter: brightness(1.25);
+  transform: scale(1.04);
+}

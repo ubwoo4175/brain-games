@@ -13,7 +13,7 @@ export const chosungQuiz: GameDefinition<ChosungRound> = {
   domain: 'language',
   color: '#fce7f3',
   minLevel: 1,
-  maxLevel: 8,
+  maxLevel: 10,
   defaultLevel: 1,
   levelLabel: (level) => LEVELS[level]?.label ?? `레벨 ${level}`,
   mode: { kind: 'rounds', count: 10 },

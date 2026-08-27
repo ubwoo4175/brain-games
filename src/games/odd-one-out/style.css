@@ -1,0 +1,38 @@
+.oo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  flex: 1;
+  justify-content: center;
+}
+.oo__grid {
+  display: grid;
+  gap: 0.5rem;
+}
+.oo__cell {
+  aspect-ratio: 1 / 1;
+  min-height: var(--tap);
+  border: 0.15rem solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 1.7rem;
+  font-weight: 800;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.oo__cell:active {
+  transform: scale(0.95);
+}
+.oo__cell--correct {
+  background: var(--correct-bg);
+  border-color: var(--correct);
+  color: var(--correct);
+}
+.oo__cell--wrong {
+  background: var(--wrong-bg);
+  border-color: var(--wrong);
+  color: var(--wrong);
+  animation: shake 0.3s ease;
+}

@@ -41,3 +41,17 @@
   font-size: 1.2rem !important;
   min-height: 3.6rem !important;
 }
+.cq__btn--emoji {
+  flex-direction: column;
+  gap: 0.1rem;
+  min-height: 5rem !important;
+  padding: 0.4rem;
+}
+.cq__emoji {
+  font-size: 2.8rem;
+  line-height: 1.1;
+}
+.cq__emoji-word {
+  font-size: 1rem;
+  font-weight: 700;
+}

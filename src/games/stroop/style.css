@@ -1,0 +1,47 @@
+.st {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  flex: 1;
+  justify-content: center;
+}
+.st__ask {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  padding: 0.6rem;
+  border-radius: var(--radius);
+}
+.st__ask--ink {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+.st__ask--word {
+  background: #ffedd5;
+  color: #9a3412;
+}
+.st__word-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 8rem;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  animation: pop 0.15s ease;
+}
+.st__word {
+  font-size: 4rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+.st__btn {
+  gap: 0.5rem;
+}
+.st__swatch {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  border: 0.12rem solid rgba(0, 0, 0, 0.25);
+  flex: 0 0 auto;
+}

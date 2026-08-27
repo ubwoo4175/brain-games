@@ -4,10 +4,8 @@ import { BigButton, ProgressBar } from '../../ui'
 import { HAND_INFO, isCorrectPick, type Hand, type LosingRpsRound } from './types'
 import './style.css'
 
-const ORDER: Hand[] = ['scissors', 'rock', 'paper']
-
 export function RoundView({ round, onAnswer }: RoundViewProps<LosingRpsRound>) {
-  const { shown, rule, timeLimitMs } = round
+  const { shown, rule, timeLimitMs, order } = round
   const [remaining, setRemaining] = useState(timeLimitMs)
   const [picked, setPicked] = useState<Hand | null>(null)
   const doneRef = useRef(false)
@@ -55,7 +53,7 @@ export function RoundView({ round, onAnswer }: RoundViewProps<LosingRpsRound>) {
       </div>
       <ProgressBar value={ratio} warn={ratio < 0.3} />
       <div className="rps__choices">
-        {ORDER.map((h) => {
+        {order.map((h) => {
           const state = picked === h ? (isCorrectPick(shown, rule, h) ? 'correct' : 'wrong') : null
           return (
             <BigButton key={h} variant="choice" state={state} onClick={() => pick(h)} className="rps__btn">

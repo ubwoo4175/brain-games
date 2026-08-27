@@ -28,6 +28,11 @@ function tone(freq: number, startOffset: number, duration: number, type: Oscilla
   osc.stop(t0 + duration + 0.05)
 }
 
+/** 게임 안에서 쓰는 단일 음 (사이먼의 버튼별 음 등). 정답/오답 피드백은 playFeedback을 쓰세요. */
+export function playNote(freq: number, settings: { sound: boolean }, duration = 0.28) {
+  if (settings.sound) tone(freq, 0, duration)
+}
+
 export type FeedbackKind = 'correct' | 'wrong' | 'tap' | 'levelUp' | 'finish'
 
 export function playFeedback(kind: FeedbackKind, settings: { sound: boolean; vibration: boolean }) {

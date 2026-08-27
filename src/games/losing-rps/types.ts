@@ -5,6 +5,8 @@ export interface LosingRpsRound {
   shown: Hand
   rule: Rule
   timeLimitMs: number
+  /** 선택 버튼이 놓이는 순서. 낮은 레벨은 고정, 높은 레벨은 매 문제 섞임 */
+  order: Hand[]
 }
 
 export const HAND_INFO: Record<Hand, { emoji: string; label: string }> = {

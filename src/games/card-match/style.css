@@ -1,0 +1,35 @@
+.cm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  flex: 1;
+  justify-content: center;
+}
+.cm__grid {
+  display: grid;
+  gap: 0.5rem;
+}
+.cm__card {
+  aspect-ratio: 3 / 3.4;
+  min-height: var(--tap);
+  border: 0.15rem solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+.cm__card:active {
+  transform: scale(0.95);
+}
+.cm__card--up {
+  background: var(--surface);
+  animation: pop 0.18s ease;
+}
+.cm__card--matched {
+  border-color: var(--correct);
+  background: var(--correct-bg);
+}

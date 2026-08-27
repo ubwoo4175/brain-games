@@ -2,7 +2,7 @@ import type { ComponentType } from 'react'
 import type { Rng } from '../shared/rng'
 
 /** 인지 영역 — 홈 화면 표시와 통계 분류에 사용 */
-export type CognitiveDomain = 'memory' | 'inhibition' | 'calculation' | 'language' | 'attention' | 'speed'
+export type CognitiveDomain = 'memory' | 'inhibition' | 'calculation' | 'language' | 'attention' | 'speed' | 'visuospatial'
 
 export const DOMAIN_LABEL: Record<CognitiveDomain, string> = {
   memory: '기억력',
@@ -11,6 +11,7 @@ export const DOMAIN_LABEL: Record<CognitiveDomain, string> = {
   language: '언어력',
   attention: '주의력',
   speed: '처리속도',
+  visuospatial: '시공간',
 }
 
 /** 세션 진행 방식: 문제 N개 풀기 또는 N초 동안 최대한 많이 */
