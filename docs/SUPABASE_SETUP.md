@@ -11,7 +11,7 @@
   - 여기 든 두 값은 원래 브라우저에 공개되는 값입니다. 실제 권한은 서버의 RLS가 지킵니다.
   - 비밀 키(`service_role`, `sb_secret_...`)는 **절대** 저장소에 넣지 마세요.
 
-**남은 것은 아래 카카오 설정 2가지뿐입니다.** 그전까지 앱은 지금처럼 잘 동작하고,
+**남은 것은 아래 카카오 설정뿐입니다.** 그전까지 앱은 지금처럼 잘 동작하고,
 설정 화면의 "카카오로 로그인" 버튼만 눌러도 로그인이 안 되는 상태입니다.
 
 ## 1. 카카오 개발자 앱 만들기 (약 5분)
@@ -25,8 +25,21 @@
      https://fnqmizlykcmuigyldzre.supabase.co/auth/v1/callback
      ```
 4. **제품 설정 > 카카오 로그인 > 보안** → **Client Secret** 발급 → 코드 복사, 상태 **사용함**
-5. **제품 설정 > 카카오 로그인 > 동의항목** → **닉네임** 을 "필수 동의"로
-   (이메일은 필요 없습니다 — 앱이 수집하지 않아요)
+
+### ⚠️ 5. 동의항목 — 여기서 틀리면 `KOE205` 오류가 납니다
+
+Supabase 는 카카오에 **`profile_nickname` + `profile_image`** (그리고 앱이 비즈앱이면 `account_email`)
+동의를 요청합니다. 콘솔에 **설정되지 않은 항목을 요청하면 카카오가 `KOE205`(잘못된 요청) 로 막습니다.**
+
+**제품 설정 > 카카오 로그인 > 동의항목** 에서 두 개를 모두 설정하세요:
+
+| 항목 | 설정 |
+|---|---|
+| **닉네임** (`profile_nickname`) | 필수 동의 |
+| **프로필 사진** (`profile_image`) | 선택 동의 ← **이것도 반드시 설정** |
+| 카카오계정(이메일) (`account_email`) | **설정하지 않음** (개인 개발자 앱에서는 못 씁니다 — 비즈앱 전환 필요) |
+
+이메일을 설정하지 않았으므로, 아래 2번에서 **"Allow users without an email"** 을 꼭 켜야 합니다.
 
 ## 2. Supabase에 카카오 연결 (약 2분)
 
@@ -34,12 +47,27 @@
    - **Enabled** 켜기
    - Client ID: 1-2의 **REST API 키**
    - Client Secret: 1-4의 **Client Secret**
+   - ⚠️ **Allow users without an email** 을 **켜기**
+     (이메일 동의항목을 안 썼기 때문에, 이걸 안 켜면 로그인 후 계정 생성이 실패합니다)
+   - **Save**
 2. https://supabase.com/dashboard/project/fnqmizlykcmuigyldzre/auth/url-configuration
    - **Site URL**: `https://ubwoo4175.github.io/brain-games/`
    - **Redirect URLs** 에 추가: `https://ubwoo4175.github.io/brain-games/**`
      (로컬 테스트도 하려면 `http://localhost:5173/**` 도 추가)
 
 끝나면 폰에서 앱 → 설정 → "카카오로 로그인" 을 눌러 확인하세요.
+
+## 로그인이 안 될 때
+
+| 증상 | 원인과 해결 |
+|---|---|
+| **KOE205** "서비스 설정에 오류가 있어..." | 동의항목 미설정. 위 1-5 표대로 **닉네임 + 프로필 사진**을 설정하세요. 이메일은 설정하지 말고, Supabase 에서 "Allow users without an email" 을 켭니다. |
+| **KOE006** "등록되지 않은 Redirect URI" | 카카오 콘솔의 Redirect URI 가 `https://fnqmizlykcmuigyldzre.supabase.co/auth/v1/callback` 과 정확히 같은지 확인 |
+| 로그인 후 앱으로 안 돌아옴 | Supabase **URL Configuration** 의 Site URL / Redirect URLs 확인 |
+| 버튼을 눌러도 카카오 화면이 안 뜸 (400) | Supabase Kakao provider 가 아직 Enabled 가 아니거나 Client ID/Secret 이 비어 있음 |
+
+문제가 계속되면 [Auth 로그](https://supabase.com/dashboard/project/fnqmizlykcmuigyldzre/logs/auth-logs)에서
+`/auth/v1/authorize` 요청이 **302**(정상 — 카카오로 넘어감)인지 **400**(Supabase 설정 문제)인지 볼 수 있습니다.
 
 ## 동작 방식
 
