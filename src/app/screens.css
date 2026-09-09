@@ -418,11 +418,19 @@
   font-size: 4rem;
 }
 
-/* ---------- 설정: 카카오 로그인 버튼 (브랜드 색) ---------- */
-.kakao-btn {
-  background: #fee500 !important;
-  border-color: #fee500 !important;
-  color: #191919 !important;
+/* ---------- 설정: 구글 로그인 버튼 ---------- */
+.google-btn {
+  background: #ffffff !important;
+  border-color: #747775 !important;
+  color: #1f1f1f !important;
+}
+.google-btn__g {
+  font-weight: 900;
+  font-size: 1.3em;
+  background: linear-gradient(135deg, #4285f4 25%, #ea4335 50%, #fbbc05 75%, #34a853);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* ---------- 홈: 오늘의 목표 ---------- */

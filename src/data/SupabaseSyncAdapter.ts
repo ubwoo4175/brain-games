@@ -48,7 +48,7 @@ const fromSessionRow = (r: any): SessionRecord => ({
 /**
  * 로컬 우선 + 백그라운드 동기화 저장소.
  * - 모든 읽기/쓰기는 LocalStorageAdapter 로 즉시 처리 → 오프라인에서도 게임이 그대로 된다.
- * - 카카오 로그인 상태(= 기록의 userId 가 Supabase 세션의 uid)면 쓰기를 서버에도 upsert.
+ * - 로그인 상태(= 기록의 userId 가 Supabase 세션의 uid)면 쓰기를 서버에도 upsert.
  *   실패하면 큐에 쌓아뒀다가 온라인이 되면 다시 보낸다.
  * - syncDown(): 앱 시작 시 서버 기록을 받아 로컬과 병합하고, 로컬에만 있는 것은 올린다.
  * - migrateFrom(): 첫 로그인 때 이 기기의 익명 기록을 계정으로 옮긴다 (기기당 1회).

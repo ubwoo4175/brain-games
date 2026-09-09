@@ -15,7 +15,7 @@ interface AppContextValue {
   levels: Record<string, number>
   setLevel: (gameId: string, level: number) => Promise<void>
   resetAll: () => Promise<void>
-  /** 서버 동기화(카카오 로그인). available=false 면 로그인 UI를 숨긴다. */
+  /** 서버 동기화(구글 로그인). available=false 면 로그인 UI를 숨긴다. */
   cloud: { available: boolean; signIn: () => Promise<void>; signOut: () => Promise<void> }
 }
 
@@ -106,7 +106,7 @@ export function AppProvider({ children, fallback }: { children: ReactNode; fallb
   const cloud = useMemo(
     () => ({
       available: getAuth().canUseCloud(),
-      signIn: () => getAuth().signInWithKakao(),
+      signIn: () => getAuth().signIn(),
       signOut: async () => {
         await getAuth().signOut()
         // 익명 상태로 처음부터 다시 (상태 꼬임 방지를 위해 새로고침이 가장 안전)

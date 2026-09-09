@@ -11,63 +11,62 @@
   - 여기 든 두 값은 원래 브라우저에 공개되는 값입니다. 실제 권한은 서버의 RLS가 지킵니다.
   - 비밀 키(`service_role`, `sb_secret_...`)는 **절대** 저장소에 넣지 마세요.
 
-**남은 것은 아래 카카오 설정뿐입니다.** 그전까지 앱은 지금처럼 잘 동작하고,
-설정 화면의 "카카오로 로그인" 버튼만 눌러도 로그인이 안 되는 상태입니다.
+**남은 것은 아래 구글 로그인 설정뿐입니다.** 그전까지 앱은 지금처럼 잘 동작하고,
+설정 화면의 "구글로 로그인" 버튼만 눌러도 로그인이 안 되는 상태입니다.
 
-## 1. 카카오 개발자 앱 만들기 (약 5분)
+> **왜 카카오가 아니라 구글인가요?**
+> Supabase 의 카카오 provider 는 `account_email` 동의를 **반드시** 요청합니다
+> (앱에서 `scopes` 를 지정해도 기본 scope 에 더해질 뿐 뺄 수 없음 — 실제 요청을 확인했습니다).
+> 그런데 그 항목은 카카오 **비즈 앱**에서만 쓸 수 있어서, 개인 앱으로는 무엇을 해도 `KOE205` 가 납니다.
+> 구글은 이런 제약이 없고, 어머니 폰(안드로이드)은 이미 구글 계정에 로그인되어 있어 탭 한두 번이면 끝납니다.
+> 나중에 카카오 비즈 앱 전환을 하시면 카카오도 함께 붙일 수 있습니다.
 
-1. https://developers.kakao.com → 카카오 계정 로그인 → **내 애플리케이션 → 애플리케이션 추가하기**
-   - 앱 이름: `오늘의 두뇌운동`, 회사명: 자유
-2. 만든 앱 → **앱 설정 > 앱 키** 에서 **REST API 키** 복사해 두기
-3. **제품 설정 > 카카오 로그인** → 활성화 **ON**
-   - **Redirect URI 등록** (그대로 복사):
+## 1. 구글 OAuth 클라이언트 만들기 (약 10분)
+
+1. https://console.cloud.google.com 접속 (구글 계정으로 로그인)
+2. 상단 프로젝트 선택 → **새 프로젝트** → 이름 `brain-games` → 만들기
+3. 왼쪽 메뉴 **API 및 서비스 → OAuth 동의 화면**
+   - User Type: **외부** → 만들기
+   - 앱 이름: `오늘의 두뇌운동`
+   - 사용자 지원 이메일 / 개발자 연락처 이메일: 본인 이메일
+   - 나머지는 기본값으로 저장하며 진행
+   - 마지막에 **"앱 게시"(프로덕션으로 전환)** 를 눌러주세요
+     → 이메일·프로필만 쓰는 기본 권한이라 구글 심사 없이 바로 게시됩니다.
+       (테스트 상태로 두면 등록한 테스트 사용자만 로그인할 수 있습니다)
+4. **API 및 서비스 → 사용자 인증 정보 → 사용자 인증 정보 만들기 → OAuth 클라이언트 ID**
+   - 애플리케이션 유형: **웹 애플리케이션**
+   - 이름: 아무거나 (`brain-games web`)
+   - **승인된 리디렉션 URI** 에 아래를 그대로 추가:
      ```
      https://fnqmizlykcmuigyldzre.supabase.co/auth/v1/callback
      ```
-4. **제품 설정 > 카카오 로그인 > 보안** → **Client Secret** 발급 → 코드 복사, 상태 **사용함**
+   - 만들기 → **클라이언트 ID** 와 **클라이언트 보안 비밀번호** 를 복사해 두기
 
-### ⚠️ 5. 동의항목 — 여기서 틀리면 `KOE205` 오류가 납니다
+## 2. Supabase에 구글 연결 (약 2분)
 
-Supabase 는 카카오에 **`profile_nickname` + `profile_image`** (그리고 앱이 비즈앱이면 `account_email`)
-동의를 요청합니다. 콘솔에 **설정되지 않은 항목을 요청하면 카카오가 `KOE205`(잘못된 요청) 로 막습니다.**
-
-**제품 설정 > 카카오 로그인 > 동의항목** 에서 두 개를 모두 설정하세요:
-
-| 항목 | 설정 |
-|---|---|
-| **닉네임** (`profile_nickname`) | 필수 동의 |
-| **프로필 사진** (`profile_image`) | 선택 동의 ← **이것도 반드시 설정** |
-| 카카오계정(이메일) (`account_email`) | **설정하지 않음** (개인 개발자 앱에서는 못 씁니다 — 비즈앱 전환 필요) |
-
-이메일을 설정하지 않았으므로, 아래 2번에서 **"Allow users without an email"** 을 꼭 켜야 합니다.
-
-## 2. Supabase에 카카오 연결 (약 2분)
-
-1. https://supabase.com/dashboard/project/fnqmizlykcmuigyldzre/auth/providers → **Kakao**
+1. https://supabase.com/dashboard/project/fnqmizlykcmuigyldzre/auth/providers → **Google**
    - **Enabled** 켜기
-   - Client ID: 1-2의 **REST API 키**
-   - Client Secret: 1-4의 **Client Secret**
-   - ⚠️ **Allow users without an email** 을 **켜기**
-     (이메일 동의항목을 안 썼기 때문에, 이걸 안 켜면 로그인 후 계정 생성이 실패합니다)
+   - **Client ID**: 1-4에서 복사한 클라이언트 ID
+   - **Client Secret**: 1-4에서 복사한 보안 비밀번호
    - **Save**
 2. https://supabase.com/dashboard/project/fnqmizlykcmuigyldzre/auth/url-configuration
    - **Site URL**: `https://ubwoo4175.github.io/brain-games/`
    - **Redirect URLs** 에 추가: `https://ubwoo4175.github.io/brain-games/**`
      (로컬 테스트도 하려면 `http://localhost:5173/**` 도 추가)
 
-끝나면 폰에서 앱 → 설정 → "카카오로 로그인" 을 눌러 확인하세요.
+끝나면 폰에서 앱 → 설정 → "구글로 로그인" 을 눌러 확인하세요.
 
 ## 로그인이 안 될 때
 
 | 증상 | 원인과 해결 |
 |---|---|
-| **KOE205** "서비스 설정에 오류가 있어..." | 동의항목 미설정. 위 1-5 표대로 **닉네임 + 프로필 사진**을 설정하세요. 이메일은 설정하지 말고, Supabase 에서 "Allow users without an email" 을 켭니다. |
-| **KOE006** "등록되지 않은 Redirect URI" | 카카오 콘솔의 Redirect URI 가 `https://fnqmizlykcmuigyldzre.supabase.co/auth/v1/callback` 과 정확히 같은지 확인 |
+| `redirect_uri_mismatch` | 구글 콘솔의 **승인된 리디렉션 URI** 가 `https://fnqmizlykcmuigyldzre.supabase.co/auth/v1/callback` 과 정확히 같은지 확인 (끝에 `/` 붙이지 말 것) |
+| "이 앱은 확인되지 않았습니다" 경고 | OAuth 동의 화면이 **테스트** 상태입니다. **앱 게시**로 바꾸거나, 테스트 사용자에 어머니 구글 계정을 추가하세요 |
 | 로그인 후 앱으로 안 돌아옴 | Supabase **URL Configuration** 의 Site URL / Redirect URLs 확인 |
-| 버튼을 눌러도 카카오 화면이 안 뜸 (400) | Supabase Kakao provider 가 아직 Enabled 가 아니거나 Client ID/Secret 이 비어 있음 |
+| 버튼을 눌러도 구글 화면이 안 뜸 (400) | Supabase Google provider 가 아직 Enabled 가 아니거나 Client ID/Secret 이 비어 있음 |
 
 문제가 계속되면 [Auth 로그](https://supabase.com/dashboard/project/fnqmizlykcmuigyldzre/logs/auth-logs)에서
-`/auth/v1/authorize` 요청이 **302**(정상 — 카카오로 넘어감)인지 **400**(Supabase 설정 문제)인지 볼 수 있습니다.
+`/auth/v1/authorize` 요청이 **302**(정상 — 구글로 넘어감)인지 **400**(Supabase 설정 문제)인지 볼 수 있습니다.
 
 ## 동작 방식
 
@@ -75,7 +74,7 @@ Supabase 는 카카오에 **`profile_nickname` + `profile_image`** (그리고 �
 - **첫 로그인 때**: 이 기기에 쌓인 익명 기록·레벨·설정을 계정으로 자동 병합
 - **로그인 후**: 게임은 여전히 로컬에 먼저 저장 → 뒤에서 서버로 올림
   (오프라인에서도 게임 가능, 온라인 되면 밀린 것 자동 전송)
-- **다른 폰**에서 같은 카카오 계정으로 로그인하면 기록이 그대로 내려옵니다
+- **다른 폰**에서 같은 구글 계정으로 로그인하면 기록이 그대로 내려옵니다
 - 설정의 "모든 기록 지우기"는 서버 기록도 함께 지웁니다
 
 ## 주의: 무료 프로젝트는 안 쓰면 잠깁니다

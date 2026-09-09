@@ -5,7 +5,7 @@
  */
 
 export interface Profile {
-  /** 익명 UUID. 나중에 카카오 로그인하면 이 익명 기록을 계정에 병합. */
+  /** 익명 UUID. 로그인하면 이 익명 기록을 계정에 병합. */
   userId: string
   nickname: string
   createdAt: string // ISO

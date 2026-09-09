@@ -21,7 +21,7 @@ src/
   engine/     공통 게임 루프: useSession, 적응 난이도, 점수, 피드백(소리·진동), GameDefinition 타입
   games/      ★ 게임 플러그인. 게임 하나 = 폴더 하나. games/index.ts 에 등록.
   data/       StorageAdapter 인터페이스 + LocalStorageAdapter. 데이터 모델(types.ts)
-  auth/       AuthProvider 인터페이스 + AnonymousAuth
+  auth/       AuthProvider 인터페이스 + AnonymousAuth + SupabaseAuth(구글 로그인)
   content/    콘텐츠 슬롯(인터스티셜). 오늘의 한마디 → 나중에 협찬 카드/광고 회상 문제
   ui/         공통 컴포넌트(BigButton, NumPad, TopBar, ProgressBar, FeedbackOverlay), theme.css
   shared/     rng(시드 난수), track(이벤트), uuid, format, supabase, push(알림 구독)
@@ -64,8 +64,8 @@ src/
 ## 데이터 규칙
 
 - 화면/게임 코드는 `getStorage()`가 주는 `StorageAdapter` 인터페이스만 사용. `localStorage` 직접 접근 금지 (auth/*, data/LocalStorageAdapter, data/SupabaseSyncAdapter 내부 제외).
-- 저장 구조는 **로컬 우선 + 백그라운드 동기화**: 읽기/쓰기는 항상 로컬(오프라인 보장), 카카오 로그인 상태면 쓰기를 Supabase에 upsert(실패분은 큐 재시도), 앱 시작 시 `syncDown`으로 병합. Supabase 환경변수(`VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`)가 없으면 로컬 전용으로 동작. 설정법: `docs/SUPABASE_SETUP.md`, 스키마: `supabase/schema.sql` (모델 바꾸면 이 파일도 같이).
-- 모든 기록에 `userId`가 붙는다. 지금은 익명 UUID. 나중에 카카오 로그인 시 익명 기록을 계정으로 병합한다는 전제.
+- 저장 구조는 **로컬 우선 + 백그라운드 동기화**: 읽기/쓰기는 항상 로컬(오프라인 보장), 구글 로그인 상태면 쓰기를 Supabase에 upsert(실패분은 큐 재시도), 앱 시작 시 `syncDown`으로 병합. Supabase 환경변수(`VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`)가 없으면 로컬 전용으로 동작. 설정법: `docs/SUPABASE_SETUP.md`, 스키마: `supabase/schema.sql` (모델 바꾸면 이 파일도 같이).
+- 모든 기록에 `userId`가 붙는다. 로그인 전에는 익명 UUID이고, 로그인 시 익명 기록을 계정으로 병합한다.
 - 저장 키 prefix `bg:v1`. 모델을 호환 안 되게 바꾸면 `v2`로 올리고 마이그레이션을 쓴다.
 - 데이터 모델은 `src/data/types.ts`가 유일한 정의. 서버(Supabase) 테이블도 이 모델을 그대로 옮긴다.
 
@@ -73,7 +73,7 @@ src/
 
 1. ✅ 1단계: 4개 게임(거꾸로 숫자·지는 가위바위보·빠른 암산·초성 퀴즈) + 로컬 저장 + 적응 난이도 + PWA + GitHub Pages
 2. 2단계: 통계 강화(주간 그래프), 소리·진동 다듬기. 오늘의 목표 ✅ (`engine/dailyGoal.ts` — 날짜별 고정, 홈 상단 카드), 매일 푸시 알림 ✅ (`docs/NOTIFICATIONS.md`). 게임 추가는 완료 ✅ (스트룹 · 카드 짝 맞추기 · 숫자 순서 터치 · 사이먼 · 다른 것 찾기 · 시계 읽기). 남은 후보: 오늘의 지남력 체크(날짜·요일 출석 확인, 게임보다는 홈/콘텐츠 슬롯 성격)
-3. 3단계: Supabase + 카카오 로그인 — 코드·서버 스키마 완료 ✅ (`SupabaseSyncAdapter`, `SupabaseAuth`, 익명 기록 병합, 프로젝트 `fnqmizlykcmuigyldzre` 테이블+RLS 적용, `.env.production` 연결). 남은 것은 카카오 개발자 콘솔 설정뿐 — `docs/SUPABASE_SETUP.md`
+3. 3단계: Supabase + 소셜 로그인 — 코드·서버 스키마 완료 ✅ (`SupabaseSyncAdapter`, `SupabaseAuth`, 익명 기록 병합, 프로젝트 `fnqmizlykcmuigyldzre` 테이블+RLS 적용, `.env.production` 연결). **구글 로그인**을 씁니다 (카카오는 Supabase가 `account_email` 을 강제 요청하는데 그건 비즈 앱 전용이라 KOE205 로 막힘). 남은 것은 구글 OAuth 콘솔 설정뿐 — `docs/SUPABASE_SETUP.md`
 4. 4단계: 콘텐츠 슬롯에 협찬 카드 + 회상 문제(광고 회상률 모델), 필요 시 Capacitor/TWA로 앱 출시
 
 ## 작업 습관

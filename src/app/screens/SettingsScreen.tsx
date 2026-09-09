@@ -154,18 +154,18 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
               {user.provider === 'anonymous' ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   <div className="setting__sub" style={{ textAlign: 'center' }}>
-                    카카오로 로그인하면 폰을 바꿔도
+                    구글로 로그인하면 폰을 바꿔도
                     <br />
                     기록과 난이도가 그대로 유지돼요
                   </div>
-                  <BigButton className="kakao-btn" full size="lg" onClick={() => void cloud.signIn()}>
-                    <span aria-hidden>💬</span> 카카오로 로그인
+                  <BigButton className="google-btn" full size="lg" onClick={() => void cloud.signIn()}>
+                    <span className="google-btn__g" aria-hidden>G</span> 구글로 로그인
                   </BigButton>
                 </div>
               ) : !confirmSignOut ? (
                 <div className="setting">
                   <div>
-                    <div className="setting__label">카카오 계정{user.displayName ? ` · ${user.displayName}` : ''}</div>
+                    <div className="setting__label">구글 계정{user.displayName ? ` · ${user.displayName}` : ''}</div>
                     <div className="setting__sub">기록이 자동으로 안전하게 저장되고 있어요</div>
                   </div>
                   <BigButton variant="secondary" onClick={() => setConfirmSignOut(true)}>
@@ -201,7 +201,7 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
             <Card>
               {!isLoggedIn ? (
                 <div className="setting__sub" style={{ textAlign: 'center' }}>
-                  카카오로 로그인하면
+                  구글로 로그인하면
                   <br />
                   매일 알림을 받을 수 있어요
                 </div>

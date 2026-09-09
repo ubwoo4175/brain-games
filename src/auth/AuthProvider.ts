@@ -6,7 +6,7 @@
  */
 export interface AuthUser {
   userId: string
-  /** 'anonymous' | 'kakao' | ... */
+  /** 'anonymous' | 'google' | ... */
   provider: string
   displayName?: string
 }

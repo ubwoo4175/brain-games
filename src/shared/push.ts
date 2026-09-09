@@ -2,7 +2,7 @@ import { getSupabase } from './supabase'
 
 /**
  * 푸시 알림 구독 관리.
- * - 알림은 카카오 로그인 상태에서만 켤 수 있습니다 (구독을 서버에 저장해야 하고,
+ * - 알림은 구글 로그인 상태에서만 켤 수 있습니다 (구독을 서버에 저장해야 하고,
  *   서버는 RLS 로 "본인 것만" 허용하기 때문).
  * - 실제 발송은 Supabase Edge Function(daily-reminder)이 매일 오후 2시에 합니다.
  */
