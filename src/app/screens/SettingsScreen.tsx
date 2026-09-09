@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { playFeedback, unlockAudio } from '../../engine/feedback'
 import { GAMES } from '../../games'
+import { disablePush, enablePush, getPushState, isPushSupported, sendTestPush, type PushState } from '../../shared/push'
 import { BigButton, Card, TopBar } from '../../ui'
 import { useApp } from '../AppContext'
 
@@ -23,6 +24,46 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
   const { user, settings, updateSettings, levels, setLevel, resetAll, cloud } = useApp()
   const [confirmReset, setConfirmReset] = useState(false)
   const [confirmSignOut, setConfirmSignOut] = useState(false)
+
+  // 푸시 알림 (매일 오후 2시, 그날 아직 안 하셨을 때만)
+  const isLoggedIn = user.provider !== 'anonymous'
+  const [pushState, setPushState] = useState<PushState | null>(null)
+  const [pushBusy, setPushBusy] = useState(false)
+  const [pushMessage, setPushMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    void getPushState(isLoggedIn).then((s) => {
+      if (!cancelled) setPushState(s)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [isLoggedIn])
+
+  const togglePush = async (on: boolean) => {
+    setPushBusy(true)
+    setPushMessage(null)
+    try {
+      if (on) {
+        const res = await enablePush(user.userId)
+        if (res.ok) {
+          setPushState('on')
+          setPushMessage('알림을 켰어요. 매일 오후 2시에 알려드릴게요.')
+        } else if (res.reason === 'denied') {
+          setPushState('denied')
+        } else {
+          setPushMessage('알림을 켜지 못했어요. 잠시 뒤 다시 해보세요.')
+        }
+      } else {
+        await disablePush()
+        setPushState('off')
+        setPushMessage(null)
+      }
+    } finally {
+      setPushBusy(false)
+    }
+  }
 
   return (
     <div className="stage">
@@ -148,6 +189,67 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
                   <BigButton variant="secondary" full onClick={() => setConfirmSignOut(false)}>
                     아니요
                   </BigButton>
+                </div>
+              )}
+            </Card>
+          </>
+        )}
+
+        {isPushSupported() && (
+          <>
+            <div className="section-title">알림</div>
+            <Card>
+              {!isLoggedIn ? (
+                <div className="setting__sub" style={{ textAlign: 'center' }}>
+                  카카오로 로그인하면
+                  <br />
+                  매일 알림을 받을 수 있어요
+                </div>
+              ) : pushState === 'denied' ? (
+                <div className="setting__sub" style={{ textAlign: 'center' }}>
+                  휴대폰에서 이 앱의 알림이 꺼져 있어요.
+                  <br />
+                  폰 설정 → 앱 → 두뇌운동 → 알림에서 켜주세요.
+                </div>
+              ) : (
+                <>
+                  <div className="setting">
+                    <div>
+                      <div className="setting__label">매일 알림 받기</div>
+                      <div className="setting__sub">오후 2시 · 그날 아직 안 하셨을 때만</div>
+                    </div>
+                    <Toggle
+                      on={pushState === 'on'}
+                      label="매일 알림 받기"
+                      onChange={(v) => {
+                        if (!pushBusy) void togglePush(v)
+                      }}
+                    />
+                  </div>
+                  {pushState === 'on' && (
+                    <>
+                      <div className="divider" />
+                      <BigButton
+                        variant="secondary"
+                        full
+                        disabled={pushBusy}
+                        onClick={() => {
+                          setPushBusy(true)
+                          setPushMessage(null)
+                          void sendTestPush()
+                            .then((r) => setPushMessage(r.ok ? '보냈어요! 잠시 뒤 알림이 올 거예요.' : '지금은 보내지 못했어요.'))
+                            .finally(() => setPushBusy(false))
+                        }}
+                      >
+                        🔔 알림 한 번 보내보기
+                      </BigButton>
+                    </>
+                  )}
+                </>
+              )}
+              {pushMessage && (
+                <div className="setting__sub" style={{ textAlign: 'center', marginTop: '0.6rem' }}>
+                  {pushMessage}
                 </div>
               )}
             </Card>

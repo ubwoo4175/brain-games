@@ -24,7 +24,8 @@ src/
   auth/       AuthProvider 인터페이스 + AnonymousAuth
   content/    콘텐츠 슬롯(인터스티셜). 오늘의 한마디 → 나중에 협찬 카드/광고 회상 문제
   ui/         공통 컴포넌트(BigButton, NumPad, TopBar, ProgressBar, FeedbackOverlay), theme.css
-  shared/     rng(시드 난수), track(이벤트), uuid, format
+  shared/     rng(시드 난수), track(이벤트), uuid, format, supabase, push(알림 구독)
+  sw.ts       서비스 워커 (오프라인 캐시 + 푸시 알림 수신)
 ```
 
 핵심 원칙: **게임은 플러그인, 나머지는 공통.** 게임 폴더는 셸/엔진/데이터 층을 직접 건드리지 않는다.
@@ -71,7 +72,7 @@ src/
 ## 로드맵 (설계 시 합의)
 
 1. ✅ 1단계: 4개 게임(거꾸로 숫자·지는 가위바위보·빠른 암산·초성 퀴즈) + 로컬 저장 + 적응 난이도 + PWA + GitHub Pages
-2. 2단계: 통계 강화(주간 그래프), 소리·진동 다듬기. 오늘의 목표 ✅ (`engine/dailyGoal.ts` — 날짜별 고정, 홈 상단 카드). 게임 추가는 완료 ✅ (스트룹 · 카드 짝 맞추기 · 숫자 순서 터치 · 사이먼 · 다른 것 찾기 · 시계 읽기). 남은 후보: 오늘의 지남력 체크(날짜·요일 출석 확인, 게임보다는 홈/콘텐츠 슬롯 성격)
+2. 2단계: 통계 강화(주간 그래프), 소리·진동 다듬기. 오늘의 목표 ✅ (`engine/dailyGoal.ts` — 날짜별 고정, 홈 상단 카드), 매일 푸시 알림 ✅ (`docs/NOTIFICATIONS.md`). 게임 추가는 완료 ✅ (스트룹 · 카드 짝 맞추기 · 숫자 순서 터치 · 사이먼 · 다른 것 찾기 · 시계 읽기). 남은 후보: 오늘의 지남력 체크(날짜·요일 출석 확인, 게임보다는 홈/콘텐츠 슬롯 성격)
 3. 3단계: Supabase + 카카오 로그인 — 코드·서버 스키마 완료 ✅ (`SupabaseSyncAdapter`, `SupabaseAuth`, 익명 기록 병합, 프로젝트 `fnqmizlykcmuigyldzre` 테이블+RLS 적용, `.env.production` 연결). 남은 것은 카카오 개발자 콘솔 설정뿐 — `docs/SUPABASE_SETUP.md`
 4. 4단계: 콘텐츠 슬롯에 협찬 카드 + 회상 문제(광고 회상률 모델), 필요 시 Capacitor/TWA로 앱 출시
 

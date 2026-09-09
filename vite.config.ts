@@ -17,6 +17,13 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // 푸시 알림을 받으려면 서비스 워커에 push 핸들러가 필요해서 커스텀 SW(src/sw.ts)를 씁니다.
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,png,svg,json,woff2}'],
+      },
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
         name: '오늘의 두뇌운동',
@@ -34,9 +41,6 @@ export default defineConfig({
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,json,woff2}'],
       },
     }),
   ],
