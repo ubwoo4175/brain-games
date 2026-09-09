@@ -424,3 +424,61 @@
   border-color: #fee500 !important;
   color: #191919 !important;
 }
+
+/* ---------- 홈: 오늘의 목표 ---------- */
+.goal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+}
+.goal--done {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+}
+.goal__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.goal__icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+.goal__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.goal__label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.goal__title {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+.goal__bar {
+  height: 0.7rem;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.goal__fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+.goal--done .goal__fill {
+  background: var(--correct);
+}
+.goal__detail {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.goal--done .goal__detail {
+  color: var(--correct);
+}

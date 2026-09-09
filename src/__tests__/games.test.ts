@@ -16,6 +16,7 @@ import { formatTime } from '../games/clock-quiz/types'
 import { GAMES } from '../games'
 import { createRng } from '../shared/rng'
 import { mergeSessions, pickNewerGameSettings } from '../data/sync'
+import { evaluateGoal, makeDailyGoal } from '../engine/dailyGoal'
 
 describe('초성', () => {
   it('한글 → 초성', () => {
@@ -233,5 +234,68 @@ describe('동기화 병합', () => {
     expect(pickNewerGameSettings(nu, old)).toBe(nu)
     expect(pickNewerGameSettings(null, old)).toBe(old)
     expect(pickNewerGameSettings(null, null)).toBeNull()
+  })
+})
+
+describe('오늘의 목표', () => {
+  const GAME_META = GAMES.map((g) => ({ id: g.id, domain: g.domain }))
+  const rec = (day: string, gameId: string, points = 100, correct = 8, total = 10) => ({
+    id: `${day}-${gameId}`,
+    userId: 'u',
+    gameId,
+    startedAt: `${day}T09:00:00.000Z`,
+    durationMs: 60000,
+    levelStart: 1,
+    levelEnd: 1,
+    correct,
+    total,
+    points,
+  })
+
+  it('처음 며칠은 가장 쉬운 목표(게임 2가지)를 준다', () => {
+    expect(makeDailyGoal('2026-09-09', [], GAME_META)).toEqual({ kind: 'games', target: 2 })
+    const twoDays = [rec('2026-09-07', 'digit-span'), rec('2026-09-08', 'stroop')]
+    expect(makeDailyGoal('2026-09-09', twoDays, GAME_META)).toEqual({ kind: 'games', target: 2 })
+  })
+
+  it('같은 날짜면 항상 같은 목표가 나온다', () => {
+    const history = Array.from({ length: 10 }, (_, i) => rec(`2026-08-${String(10 + i).padStart(2, '0')}`, 'quick-math'))
+    for (const day of ['2026-09-09', '2026-09-10', '2026-09-11']) {
+      expect(makeDailyGoal(day, history, GAME_META)).toEqual(makeDailyGoal(day, history, GAME_META))
+    }
+  })
+
+  it('모든 목표 종류가 오늘 기록으로 올바르게 채점된다', () => {
+    const today = '2026-09-09'
+    const todaySessions = [rec(today, 'digit-span', 120, 9, 10), rec(today, 'stroop', 80, 5, 10)]
+
+    const games = evaluateGoal({ kind: 'games', target: 3 }, todaySessions, GAME_META, today)
+    expect(games.detail).toBe('2 / 3가지')
+    expect(games.done).toBe(false)
+    expect(evaluateGoal({ kind: 'games', target: 2 }, todaySessions, GAME_META, today).done).toBe(true)
+
+    const points = evaluateGoal({ kind: 'points', target: 200 }, todaySessions, GAME_META, today)
+    expect(points.detail).toBe('200 / 200점')
+    expect(points.done).toBe(true)
+
+    const acc = evaluateGoal({ kind: 'accuracy', target: 70 }, todaySessions, GAME_META, today)
+    expect(acc.done).toBe(true) // 9/10 = 90%
+    expect(evaluateGoal({ kind: 'accuracy', target: 95 }, todaySessions, GAME_META, today).done).toBe(false)
+
+    const memory = evaluateGoal({ kind: 'domain', domain: 'memory', target: 1 }, todaySessions, GAME_META, today)
+    expect(memory.done).toBe(true) // digit-span 은 기억력
+    expect(evaluateGoal({ kind: 'domain', domain: 'language', target: 1 }, todaySessions, GAME_META, today).done).toBe(false)
+  })
+
+  it('어제 기록은 오늘 진행률에 안 들어간다', () => {
+    const g = evaluateGoal({ kind: 'games', target: 2 }, [rec('2026-09-08', 'digit-span')], GAME_META, '2026-09-09')
+    expect(g.ratio).toBe(0)
+    expect(g.done).toBe(false)
+  })
+
+  it('진행률은 0~1을 벗어나지 않는다', () => {
+    const today = '2026-09-09'
+    const many = [rec(today, 'digit-span', 5000, 10, 10)]
+    expect(evaluateGoal({ kind: 'points', target: 100 }, many, GAME_META, today).ratio).toBe(1)
   })
 })

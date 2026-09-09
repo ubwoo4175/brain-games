@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { pickContent } from '../../content'
 import type { SessionRecord } from '../../data'
+import { evaluateGoal, makeDailyGoal } from '../../engine/dailyGoal'
 import { DOMAIN_LABEL } from '../../engine/types'
 import { GAMES } from '../../games'
 import { daysBetween, formatKoreanDate, todayKey } from '../../shared/format'
@@ -39,6 +40,10 @@ export function HomeScreen({ navigate }: { navigate: (r: Route) => void }) {
   const content = pickContent(today)
   const lastPlayed = sessions[0] ? daysBetween(sessions[0].startedAt.slice(0, 10), today) : null
 
+  // 오늘의 목표 (날짜가 같으면 하루 종일 같은 목표)
+  const goalGames = useMemo(() => GAMES.map((g) => ({ id: g.id, domain: g.domain })), [])
+  const goal = useMemo(() => evaluateGoal(makeDailyGoal(today, sessions, goalGames), sessions, goalGames, today), [today, sessions, goalGames])
+
   return (
     <div className="stage">
       <div className="stage__body">
@@ -61,6 +66,22 @@ export function HomeScreen({ navigate }: { navigate: (r: Route) => void }) {
                   : '아무거나 하나 골라서 시작해보세요'}
             </div>
           </div>
+        </Card>
+
+        <Card className={`goal${goal.done ? ' goal--done' : ''}`}>
+          <div className="goal__head">
+            <span className="goal__icon" aria-hidden>
+              {goal.done ? '🏅' : '🎯'}
+            </span>
+            <div className="goal__text">
+              <div className="goal__label">오늘의 목표</div>
+              <div className="goal__title">{goal.title}</div>
+            </div>
+          </div>
+          <div className="goal__bar" role="progressbar" aria-valuenow={Math.round(goal.ratio * 100)} aria-valuemin={0} aria-valuemax={100}>
+            <div className="goal__fill" style={{ width: `${goal.ratio * 100}%` }} />
+          </div>
+          <div className="goal__detail">{goal.done ? '해내셨어요! 오늘 목표 달성 🎉' : goal.detail}</div>
         </Card>
 
         <div className="home__games">
