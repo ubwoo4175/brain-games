@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react'
+import { useState, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react'
 import './theme.css'
 import './components.css'
 
@@ -26,6 +26,25 @@ export function BigButton({ variant = 'primary', size = 'md', full, state, class
     <button type="button" className={cls} {...rest}>
       {children}
     </button>
+  )
+}
+
+/* ---------- Avatar ---------- */
+/**
+ * 사용자 동그라미. 계정 사진 → 이름 첫 글자 → 사람 아이콘 순으로 보여줍니다.
+ * (사진은 오프라인이거나 구글이 막으면 안 뜰 수 있어서 실패하면 글자로 되돌아갑니다)
+ */
+export function Avatar({ name, photoUrl, size = 'md' }: { name?: string; photoUrl?: string; size?: 'md' | 'lg' }) {
+  const [broken, setBroken] = useState(false)
+  const initial = (name ?? '').trim().charAt(0)
+  const cls = `avatar avatar--${size}`
+  if (photoUrl && !broken) {
+    return <img className={cls} src={photoUrl} alt="" referrerPolicy="no-referrer" onError={() => setBroken(true)} />
+  }
+  return (
+    <span className={cls} aria-hidden>
+      {initial || '👤'}
+    </span>
   )
 }
 

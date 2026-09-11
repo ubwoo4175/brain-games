@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { playFeedback, unlockAudio } from '../../engine/feedback'
 import { GAMES } from '../../games'
 import { disablePush, enablePush, getPushState, isPushSupported, sendTestPush, type PushState } from '../../shared/push'
-import { BigButton, Card, TopBar } from '../../ui'
+import { Avatar, BigButton, Card, TopBar } from '../../ui'
 import { useApp } from '../AppContext'
+import type { Route } from '../router'
 
 function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
   return (
@@ -20,10 +21,9 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
   )
 }
 
-export function SettingsScreen({ onBack }: { onBack: () => void }) {
-  const { user, settings, updateSettings, levels, setLevel, resetAll, cloud } = useApp()
+export function SettingsScreen({ onBack, navigate }: { onBack: () => void; navigate: (r: Route) => void }) {
+  const { user, profile, settings, updateSettings, levels, setLevel, resetAll, cloud } = useApp()
   const [confirmReset, setConfirmReset] = useState(false)
-  const [confirmSignOut, setConfirmSignOut] = useState(false)
 
   // 푸시 알림 (매일 오후 2시, 그날 아직 안 하셨을 때만)
   const isLoggedIn = user.provider !== 'anonymous'
@@ -147,53 +147,21 @@ export function SettingsScreen({ onBack }: { onBack: () => void }) {
           })}
         </Card>
 
-        {cloud.available && (
-          <>
-            <div className="section-title">계정</div>
-            <Card>
-              {user.provider === 'anonymous' ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <div className="setting__sub" style={{ textAlign: 'center' }}>
-                    구글로 로그인하면 폰을 바꿔도
-                    <br />
-                    기록과 난이도가 그대로 유지돼요
-                  </div>
-                  <BigButton className="google-btn" full size="lg" onClick={() => void cloud.signIn()}>
-                    <span className="google-btn__g" aria-hidden>G</span> 구글로 로그인
-                  </BigButton>
-                </div>
-              ) : !confirmSignOut ? (
-                <div className="setting">
-                  <div>
-                    <div className="setting__label">구글 계정{user.displayName ? ` · ${user.displayName}` : ''}</div>
-                    <div className="setting__sub">기록이 자동으로 안전하게 저장되고 있어요</div>
-                  </div>
-                  <BigButton variant="secondary" onClick={() => setConfirmSignOut(true)}>
-                    로그아웃
-                  </BigButton>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <div className="setting__label" style={{ textAlign: 'center' }}>
-                    로그아웃할까요? 기록은 서버에 안전하게 남아요.
-                  </div>
-                  <BigButton
-                    variant="danger"
-                    full
-                    onClick={() => {
-                      void cloud.signOut()
-                    }}
-                  >
-                    네, 로그아웃할게요
-                  </BigButton>
-                  <BigButton variant="secondary" full onClick={() => setConfirmSignOut(false)}>
-                    아니요
-                  </BigButton>
-                </div>
-              )}
-            </Card>
-          </>
-        )}
+        <div className="section-title">내 정보</div>
+        <Card>
+          <button type="button" className="account-row" onClick={() => navigate({ name: 'account' })}>
+            <Avatar name={profile.nickname || user.displayName} photoUrl={user.avatarUrl} />
+            <span className="account-row__text">
+              <span className="setting__label">{profile.nickname || '이름을 정해주세요'}</span>
+              <span className="setting__sub">
+                {user.provider === 'anonymous' ? (cloud.available ? '로그인하고 기록 지키기' : '이 기기에만 저장돼요') : '구글 계정으로 로그인 중'}
+              </span>
+            </span>
+            <span className="account-row__arrow" aria-hidden>
+              ›
+            </span>
+          </button>
+        </Card>
 
         {isPushSupported() && (
           <>

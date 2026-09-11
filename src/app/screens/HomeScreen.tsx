@@ -5,7 +5,7 @@ import { evaluateGoal, makeDailyGoal } from '../../engine/dailyGoal'
 import { DOMAIN_LABEL } from '../../engine/types'
 import { GAMES } from '../../games'
 import { daysBetween, formatKoreanDate, todayKey } from '../../shared/format'
-import { BigButton, Card } from '../../ui'
+import { Avatar, BigButton, Card } from '../../ui'
 import { useApp } from '../AppContext'
 import type { Route } from '../router'
 
@@ -27,7 +27,7 @@ function computeStreak(sessions: SessionRecord[]): { streak: number; playedToday
 }
 
 export function HomeScreen({ navigate }: { navigate: (r: Route) => void }) {
-  const { user, storage, levels } = useApp()
+  const { user, storage, profile, levels } = useApp()
   const [sessions, setSessions] = useState<SessionRecord[]>([])
 
   useEffect(() => {
@@ -48,15 +48,29 @@ export function HomeScreen({ navigate }: { navigate: (r: Route) => void }) {
     <div className="stage">
       <div className="stage__body">
         <header className="home__header">
-          <h1 className="home__title">오늘의 두뇌운동</h1>
-          <p className="home__date">{formatKoreanDate()}</p>
+          <div className="home__header-text">
+            <h1 className="home__title">오늘의 두뇌운동</h1>
+            <p className="home__date">{formatKoreanDate()}</p>
+          </div>
+          <button
+            type="button"
+            className="home__avatar-btn"
+            onClick={() => navigate({ name: 'account' })}
+            aria-label={profile.nickname ? `${profile.nickname}님 내 정보` : '내 정보'}
+          >
+            <Avatar name={profile.nickname || user.displayName} photoUrl={user.avatarUrl} />
+          </button>
         </header>
 
         <Card className="home__streak">
           <span className="home__streak-icon">{playedToday ? '🔥' : '🌱'}</span>
-          <div>
+          <div className="home__streak-text">
             <div className="home__streak-main">
-              {streak > 0 ? `${streak}일 연속 운동 중!` : lastPlayed === null ? '처음 오셨네요, 환영해요!' : '오늘도 시작해볼까요?'}
+              {streak > 0
+                ? `${streak}일 연속 운동 중!`
+                : lastPlayed === null
+                  ? `${profile.nickname ? `${profile.nickname}님, ` : ''}처음 오셨네요!`
+                  : `${profile.nickname ? `${profile.nickname}님, ` : ''}오늘도 시작해볼까요?`}
             </div>
             <div className="home__streak-sub">
               {playedToday

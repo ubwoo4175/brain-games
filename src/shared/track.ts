@@ -15,6 +15,7 @@ export type TrackEvent =
   | 'ad_shown'
   | 'ad_recalled'
   | 'settings_change'
+  | 'profile_change'
 
 type Sink = (event: TrackEvent, props?: Record<string, unknown>) => void
 

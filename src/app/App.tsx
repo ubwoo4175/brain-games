@@ -1,6 +1,7 @@
 import { getGame } from '../games'
 import { AppProvider } from './AppContext'
 import { useHashRoute } from './router'
+import { AccountScreen } from './screens/AccountScreen'
 import { GameScreen } from './screens/GameScreen'
 import { HomeScreen } from './screens/HomeScreen'
 import { SettingsScreen } from './screens/SettingsScreen'
@@ -34,7 +35,9 @@ function Screens() {
     case 'stats':
       return <StatsScreen onBack={goHome} />
     case 'settings':
-      return <SettingsScreen onBack={goHome} />
+      return <SettingsScreen onBack={goHome} navigate={navigate} />
+    case 'account':
+      return <AccountScreen onBack={goHome} />
     default:
       return <HomeScreen navigate={navigate} />
   }

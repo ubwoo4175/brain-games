@@ -9,6 +9,10 @@ export interface AuthUser {
   /** 'anonymous' | 'google' | ... */
   provider: string
   displayName?: string
+  /** 로그인 계정 이메일 (익명이면 없음) */
+  email?: string
+  /** 계정 프로필 사진 URL (익명이면 없음) */
+  avatarUrl?: string
 }
 
 export interface AuthProvider {

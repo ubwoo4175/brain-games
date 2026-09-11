@@ -1,9 +1,31 @@
 /* ---------- Home ---------- */
 .home__header {
   display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0 0.2rem;
+}
+.home__header-text {
+  display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  padding: 0.6rem 0 0.2rem;
+  min-width: 0;
+  flex: 1;
+}
+/* 우측 상단 사용자 동그라미 — 탭 영역은 아이콘보다 넉넉하게 */
+.home__avatar-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  border-radius: 999px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.home__avatar-btn:active .avatar {
+  transform: scale(0.94);
 }
 .home__title {
   font-size: 1.6rem;
@@ -23,9 +45,14 @@
   font-size: 2.2rem;
   line-height: 1;
 }
+/* 이름이 긴 분도 카드를 넘지 않도록 (keep-all 이라 긴 한 덩어리는 못 끊음 → anywhere 로 허용) */
+.home__streak-text {
+  min-width: 0;
+}
 .home__streak-main {
   font-size: 1.25rem;
   font-weight: 800;
+  overflow-wrap: anywhere;
 }
 .home__streak-sub {
   color: var(--muted);
@@ -489,4 +516,103 @@
 }
 .goal--done .goal__detail {
   color: var(--correct);
+}
+
+
+/* ---------- 내 정보 (계정) ---------- */
+.account__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  text-align: center;
+  background: linear-gradient(135deg, #fff1e4, #ffe4d1);
+}
+.account__name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  word-break: keep-all;
+}
+/* 오른쪽 값은 길면 줄바꿈 대신 말줄임 (이메일이 길어도 카드가 안 넘침) */
+.account__value {
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+.account__input {
+  width: 100%;
+  min-height: var(--tap);
+  margin: 0.4rem 0 0.2rem;
+  padding: 0 0.8rem;
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--surface);
+  border: 0.15rem solid var(--line);
+  border-radius: var(--radius);
+}
+.account__input:focus {
+  outline: 0.2rem solid var(--accent);
+  outline-offset: 0.1rem;
+}
+.account__edit-actions,
+.account__signin {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.account__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+.account__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.account__stat-num {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.1;
+}
+.account__stat-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* 설정 화면에서 내 정보로 들어가는 줄 */
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0.3rem 0;
+  background: transparent;
+  border: 0;
+  text-align: left;
+}
+.account-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1;
+  min-width: 0;
+}
+.account-row__arrow {
+  flex: none;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+.account-row:active {
+  opacity: 0.7;
 }

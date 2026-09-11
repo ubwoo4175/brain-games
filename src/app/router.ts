@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 /**
- * 아주 작은 해시 라우터. (#/ , #/game/quick-math , #/stats , #/settings)
+ * 아주 작은 해시 라우터. (#/ , #/game/quick-math , #/stats , #/settings , #/account)
  * - 해시를 쓰는 이유: GitHub Pages 같은 정적 호스팅에서 새로고침해도 404가 안 나고,
  *   안드로이드 "뒤로" 버튼이 앱을 닫지 않고 이전 화면으로 가게 됩니다.
  */
@@ -10,6 +10,7 @@ export type Route =
   | { name: 'game'; gameId: string }
   | { name: 'stats' }
   | { name: 'settings' }
+  | { name: 'account' }
 
 function parse(hash: string): Route {
   const path = hash.replace(/^#/, '') || '/'
@@ -17,6 +18,7 @@ function parse(hash: string): Route {
   if (parts[0] === 'game' && parts[1]) return { name: 'game', gameId: parts[1] }
   if (parts[0] === 'stats') return { name: 'stats' }
   if (parts[0] === 'settings') return { name: 'settings' }
+  if (parts[0] === 'account') return { name: 'account' }
   return { name: 'home' }
 }
 
@@ -28,6 +30,8 @@ export function routeToHash(route: Route): string {
       return '#/stats'
     case 'settings':
       return '#/settings'
+    case 'account':
+      return '#/account'
     default:
       return '#/'
   }

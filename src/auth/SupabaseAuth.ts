@@ -26,8 +26,14 @@ export class SupabaseAuth implements AuthProvider {
       const u = data.session?.user
       if (u) {
         const meta = (u.user_metadata ?? {}) as Record<string, unknown>
-        const name = [meta.name, meta.full_name, meta.nickname, meta.preferred_username].find((v) => typeof v === 'string' && v)
-        return { userId: u.id, provider: 'google', displayName: name as string | undefined }
+        const pick = (...keys: string[]) => keys.map((k) => meta[k]).find((v) => typeof v === 'string' && v) as string | undefined
+        return {
+          userId: u.id,
+          provider: 'google',
+          displayName: pick('name', 'full_name', 'nickname', 'preferred_username'),
+          email: u.email ?? pick('email'),
+          avatarUrl: pick('avatar_url', 'picture'),
+        }
       }
     }
     return this.anon.getCurrentUser()
