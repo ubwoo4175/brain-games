@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF9A76"/>
+      <stop offset="100%" stop-color="#E8590C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경: 둥근 사각형 -->
+  <rect x="0" y="0" width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(71.68,71.68) scale(0.72)">
+
+  <!-- 반짝임 (전구가 켜진 느낌) -->
+  <g stroke="#FFF3C4" stroke-width="22" stroke-linecap="round" opacity="0.95">
+    <line x1="256" y1="74"  x2="256" y2="112"/>
+    <line x1="139" y1="122" x2="166" y2="149"/>
+    <line x1="373" y1="122" x2="346" y2="149"/>
+    <line x1="96"  y1="238" x2="134" y2="238"/>
+    <line x1="416" y1="238" x2="378" y2="238"/>
+  </g>
+
+  <!-- 전구 유리구 -->
+  <circle cx="256" cy="252" r="106" fill="#FFFFFF"/>
+
+  <!-- 전구 목 + 나사 -->
+  <rect x="216" y="346" width="80" height="30" rx="12" fill="#FFFFFF"/>
+  <rect x="222" y="384" width="68" height="22" rx="11" fill="#FFE8A3"/>
+  <rect x="230" y="414" width="52" height="20" rx="10" fill="#FFE8A3"/>
+
+  <!-- 뇌 주름 (전구 안) -->
+  <g fill="none" stroke="#E8590C" stroke-width="17" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 가운데 세로선 -->
+    <path d="M256 186 V 320"/>
+    <!-- 왼쪽 주름 -->
+    <path d="M256 206 C 214 186, 184 214, 199 240 C 176 258, 190 296, 222 292 C 232 312, 252 310, 256 300"/>
+    <!-- 오른쪽 주름 -->
+    <path d="M256 206 C 298 186, 328 214, 313 240 C 336 258, 322 296, 290 292 C 280 312, 260 310, 256 300"/>
+  </g>
+  </g>
+</svg>
