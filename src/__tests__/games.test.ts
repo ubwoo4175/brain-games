@@ -17,6 +17,7 @@ import { GAMES } from '../games'
 import { createRng } from '../shared/rng'
 import { mergeSessions, pickNewerGameSettings } from '../data/sync'
 import { evaluateGoal, makeDailyGoal } from '../engine/dailyGoal'
+import { pickRandomGameId } from '../engine/pickGame'
 
 describe('초성', () => {
   it('한글 → 초성', () => {
@@ -297,5 +298,50 @@ describe('오늘의 목표', () => {
     const today = '2026-09-09'
     const many = [rec(today, 'digit-span', 5000, 10, 10)]
     expect(evaluateGoal({ kind: 'points', target: 100 }, many, GAME_META, today).ratio).toBe(1)
+  })
+})
+
+
+describe('무작위 게임 고르기', () => {
+  const ids = ['a', 'b', 'c', 'd']
+
+  it('오늘 안 한 게임 중에서만 고른다', () => {
+    for (let i = 0; i < 20; i++) {
+      const picked = pickRandomGameId(ids, { doneToday: ['a', 'b'], random: () => i / 20 })
+      expect(['c', 'd']).toContain(picked)
+    }
+  })
+
+  it('오늘 전부 했으면 전체에서 고른다', () => {
+    const picked = pickRandomGameId(ids, { doneToday: ids, random: () => 0.5 })
+    expect(ids).toContain(picked)
+  })
+
+  it('직전에 한 게임은 안 고른다', () => {
+    for (let i = 0; i < 20; i++) {
+      const picked = pickRandomGameId(ids, { lastPlayedId: 'c', random: () => i / 20 })
+      expect(picked).not.toBe('c')
+    }
+  })
+
+  it('남은 후보가 직전 게임뿐이면 그거라도 고른다', () => {
+    const picked = pickRandomGameId(ids, { doneToday: ['a', 'b', 'd'], lastPlayedId: 'c', random: () => 0 })
+    expect(picked).toBe('c')
+  })
+
+  it('random 이 1에 가까워도 배열 밖으로 안 나간다', () => {
+    expect(pickRandomGameId(ids, { random: () => 0.999999 })).toBe('d')
+    expect(pickRandomGameId(ids, { random: () => 1 })).toBe('d')
+  })
+
+  it('게임이 없으면 null', () => {
+    expect(pickRandomGameId([])).toBeNull()
+  })
+
+  it('등록된 게임 전부가 언젠가는 뽑힌다', () => {
+    const all = GAMES.map((g) => g.id)
+    const seen = new Set<string>()
+    for (let i = 0; i < all.length; i++) seen.add(pickRandomGameId(all, { random: () => i / all.length })!)
+    expect(seen.size).toBe(all.length)
   })
 })

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { pickContent } from '../../content'
 import type { SessionRecord } from '../../data'
 import { evaluateGoal, makeDailyGoal } from '../../engine/dailyGoal'
+import { pickRandomGameId } from '../../engine/pickGame'
 import { DOMAIN_LABEL } from '../../engine/types'
 import { GAMES } from '../../games'
 import { daysBetween, formatKoreanDate, todayKey } from '../../shared/format'
@@ -44,6 +45,15 @@ export function HomeScreen({ navigate }: { navigate: (r: Route) => void }) {
   const goalGames = useMemo(() => GAMES.map((g) => ({ id: g.id, domain: g.domain })), [])
   const goal = useMemo(() => evaluateGoal(makeDailyGoal(today, sessions, goalGames), sessions, goalGames, today), [today, sessions, goalGames])
 
+  // 맨 위 카드를 누르면 게임 하나를 골라서 바로 시작 (고르는 것도 부담이 되지 않도록)
+  const startRandom = () => {
+    const id = pickRandomGameId(
+      GAMES.map((g) => g.id),
+      { doneToday: [...doneToday], lastPlayedId: sessions[0]?.gameId ?? null },
+    )
+    if (id) navigate({ name: 'game', gameId: id })
+  }
+
   return (
     <div className="stage">
       <div className="stage__body">
@@ -62,25 +72,28 @@ export function HomeScreen({ navigate }: { navigate: (r: Route) => void }) {
           </button>
         </header>
 
-        <Card className="home__streak">
-          <span className="home__streak-icon">{playedToday ? '🔥' : '🌱'}</span>
-          <div className="home__streak-text">
-            <div className="home__streak-main">
+        <button type="button" className="card home__streak" onClick={startRandom} aria-label="게임 하나를 골라서 바로 시작하기">
+          <span className="home__streak-icon" aria-hidden>
+            {playedToday ? '🔥' : '🌱'}
+          </span>
+          <span className="home__streak-text">
+            <span className="home__streak-main">
               {streak > 0
                 ? `${streak}일 연속 운동 중!`
                 : lastPlayed === null
                   ? `${profile.nickname ? `${profile.nickname}님, ` : ''}처음 오셨네요!`
                   : `${profile.nickname ? `${profile.nickname}님, ` : ''}오늘도 시작해볼까요?`}
-            </div>
-            <div className="home__streak-sub">
+            </span>
+            <span className="home__streak-sub">
               {playedToday
                 ? `오늘 ${doneToday.size}가지 게임 완료 · ${GAMES.length - doneToday.size > 0 ? `${GAMES.length - doneToday.size}가지 남았어요` : '전부 다 하셨어요!'}`
                 : streak > 0
                   ? '오늘 하면 기록이 이어져요'
-                  : '아무거나 하나 골라서 시작해보세요'}
-            </div>
-          </div>
-        </Card>
+                  : '눌러서 바로 시작해보세요'}
+            </span>
+            <span className="home__streak-cta">👉 바로 시작하기</span>
+          </span>
+        </button>
 
         <Card className={`goal${goal.done ? ' goal--done' : ''}`}>
           <div className="goal__head">

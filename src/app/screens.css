@@ -35,11 +35,25 @@
   color: var(--muted);
   font-weight: 600;
 }
+/* 맨 위 카드 = 눌러서 무작위로 한 판 시작하는 버튼 */
 .home__streak {
   display: flex;
   align-items: center;
   gap: 0.8rem;
+  width: 100%;
+  text-align: left;
+  border: 0.15rem solid var(--accent);
   background: linear-gradient(135deg, #fff1e4, #ffe4d1);
+  transition: transform 0.08s ease;
+}
+.home__streak:active {
+  transform: scale(0.98);
+}
+.home__streak-cta {
+  margin-top: 0.3rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary);
 }
 .home__streak-icon {
   font-size: 2.2rem;
@@ -47,6 +61,8 @@
 }
 /* 이름이 긴 분도 카드를 넘지 않도록 (keep-all 이라 긴 한 덩어리는 못 끊음 → anywhere 로 허용) */
 .home__streak-text {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
 }
 .home__streak-main {
