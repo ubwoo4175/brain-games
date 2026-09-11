@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개인정보처리방침 · 오늘의 두뇌운동</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0; padding: 1.5rem 1.2rem 4rem;
+    background: #fff8f0; color: #1f1f1f;
+    font-family: system-ui, -apple-system, 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    line-height: 1.65; word-break: keep-all;
+  }
+  main { max-width: 42rem; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 .3rem; }
+  .sub { color: #5f5f5f; margin: 0 0 2rem; }
+  h2 { font-size: 1.15rem; margin: 2rem 0 .5rem; padding-top: 1rem; border-top: 1px solid #e6d9cc; }
+  ul { padding-left: 1.2rem; }
+  li { margin: .35rem 0; }
+  table { width: 100%; border-collapse: collapse; margin: .6rem 0; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid #e6d9cc; vertical-align: top; }
+  th { background: #fff1e4; white-space: nowrap; }
+  a { color: #c2410c; }
+  .note { background: #fff; border-radius: .8rem; padding: .9rem 1rem; box-shadow: 0 1px 4px rgba(60,30,0,.1); }
+</style>
+</head>
+<body>
+<main>
+  <h1>개인정보처리방침</h1>
+  <p class="sub">오늘의 두뇌운동 (brain-games) · 최종 수정 2026-09-11</p>
+
+  <p class="note">
+    이 앱은 가족이 쓰려고 만든 비영리 개인 프로젝트입니다.
+    <strong>로그인하지 않으면 아무 정보도 서버로 보내지 않고</strong>, 모든 기록은 그 기기 안에만 저장됩니다.
+  </p>
+
+  <h2>1. 수집하는 정보</h2>
+  <table>
+    <tr><th>구분</th><th>항목</th><th>언제</th></tr>
+    <tr>
+      <td>계정</td>
+      <td>구글 계정의 이메일 주소, 이름, 프로필 사진 주소</td>
+      <td>구글 로그인을 한 경우에만</td>
+    </tr>
+    <tr>
+      <td>게임 기록</td>
+      <td>게임 종류, 맞힌 개수, 점수, 난이도, 플레이 시각·소요 시간</td>
+      <td>게임을 할 때 (기기에 저장, 로그인 시 서버에도 저장)</td>
+    </tr>
+    <tr>
+      <td>앱 설정</td>
+      <td>소리·진동 켜짐 여부, 글자 크기</td>
+      <td>설정을 바꿀 때</td>
+    </tr>
+    <tr>
+      <td>알림</td>
+      <td>브라우저가 발급한 푸시 구독 정보(주소·암호키)</td>
+      <td>알림을 켠 경우에만</td>
+    </tr>
+  </table>
+  <p>이름·주민등록번호·전화번호·주소·결제정보는 수집하지 않습니다. 광고 추적이나 분석 도구도 쓰지 않습니다.</p>
+
+  <h2>2. 이용 목적</h2>
+  <ul>
+    <li>게임 기록과 난이도를 저장해 다음에 이어서 할 수 있게 하기</li>
+    <li>기기를 바꿔도 같은 계정으로 기록을 이어가기</li>
+    <li>설정하신 경우, 하루 한 번 알림 보내기</li>
+  </ul>
+
+  <h2>3. 보관과 파기</h2>
+  <ul>
+    <li>기기 안 기록: 앱의 <strong>설정 → 모든 기록 지우기</strong> 를 누르면 즉시 삭제됩니다.</li>
+    <li>서버 기록: 위 버튼을 누르면 서버에 저장된 기록도 함께 삭제됩니다.</li>
+    <li>그 외에는 이용하는 동안 보관하며, 계정을 삭제하면 연결된 기록도 모두 지워집니다.</li>
+  </ul>
+
+  <h2>4. 처리 위탁 (제3자)</h2>
+  <ul>
+    <li><strong>Supabase</strong> — 데이터베이스·로그인 처리 (서버 위치: 대한민국 서울)</li>
+    <li><strong>Google</strong> — 구글 계정 로그인</li>
+    <li><strong>브라우저 푸시 서비스</strong>(구글 FCM 등) — 알림 전달. 알림을 켠 경우에만 사용합니다.</li>
+  </ul>
+  <p>수집한 정보를 판매하거나 광고 목적으로 제공하지 않습니다.</p>
+
+  <h2>5. 안전조치</h2>
+  <ul>
+    <li>모든 통신은 HTTPS로 암호화됩니다.</li>
+    <li>서버는 행 수준 보안(RLS)을 적용해 <strong>본인 계정의 기록만</strong> 읽고 쓸 수 있습니다.</li>
+    <li>알림 내용은 표준 웹 푸시 방식으로 암호화되어 전달됩니다.</li>
+  </ul>
+
+  <h2>6. 이용자의 권리</h2>
+  <p>언제든지 앱에서 기록을 삭제하거나, 설정에서 로그아웃·알림 끄기를 할 수 있습니다.
+     본인 정보의 열람·정정·삭제를 원하시면 아래로 연락해 주세요.</p>
+
+  <h2>7. 문의</h2>
+  <p>이메일: <a href="mailto:ubwoo4175@gmail.com">ubwoo4175@gmail.com</a></p>
+
+  <p style="margin-top:2.5rem"><a href="./">← 앱으로 돌아가기</a></p>
+</main>
+</body>
+</html>
