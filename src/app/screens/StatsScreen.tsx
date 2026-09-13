@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { SessionRecord } from '../../data'
+import { buildWeekly, weeklyMax, weeklySummary } from '../../engine/weekly'
 import { GAMES } from '../../games'
 import { todayKey } from '../../shared/format'
 import { Card, TopBar } from '../../ui'
@@ -16,13 +17,9 @@ export function StatsScreen({ onBack }: { onBack: () => void }) {
   const all = sessions ?? []
   const playedDays = new Set(all.map((s) => s.startedAt.slice(0, 10)))
 
-  // 최근 7일 (오늘 포함)
-  const week = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date()
-    d.setDate(d.getDate() - (6 - i))
-    const key = todayKey(d)
-    return { key, label: ['일', '월', '화', '수', '목', '금', '토'][d.getDay()], on: playedDays.has(key) }
-  })
+  // 최근 7일 일별 점수 (오늘이 맨 오른쪽)
+  const week = buildWeekly(all)
+  const max = weeklyMax(week)
 
   return (
     <div className="stage">
@@ -30,17 +27,29 @@ export function StatsScreen({ onBack }: { onBack: () => void }) {
       <div className="stage__body">
         <Card>
           <div className="section-title" style={{ marginTop: 0 }}>
-            최근 7일
+            최근 7일 점수
           </div>
-          <div className="stats__week" style={{ marginTop: '0.5rem' }}>
+          <div
+            className="chart"
+            role="img"
+            aria-label={`최근 7일 일별 점수. ${week.map((d) => `${d.label}요일 ${d.points}점`).join(', ')}`}
+          >
             {week.map((d) => (
-              <div key={d.key} className="stats__day">
-                <span className={`stats__dot${d.on ? ' stats__dot--on' : ''}`}>{d.on ? '✓' : ''}</span>
-                <span>{d.label}</span>
+              <div key={d.key} className={`chart__col${d.isToday ? ' chart__col--today' : ''}`}>
+                <span className="chart__value">{d.points > 0 ? d.points : ''}</span>
+                <span className="chart__track">
+                  <span
+                    className={`chart__bar${d.points === 0 ? ' chart__bar--empty' : ''}`}
+                    style={{ height: d.points > 0 ? `${Math.max(8, (d.points / max) * 100)}%` : undefined }}
+                  />
+                </span>
+                <span className="chart__label">{d.label}</span>
               </div>
             ))}
           </div>
-          <div className="setting__sub" style={{ marginTop: '0.6rem', textAlign: 'center' }}>
+          <div className="setting__sub chart__summary">{weeklySummary(week)}</div>
+          <div className="divider" />
+          <div className="setting__sub" style={{ textAlign: 'center' }}>
             지금까지 {playedDays.size}일 운동 · 총 {all.length}회
           </div>
         </Card>

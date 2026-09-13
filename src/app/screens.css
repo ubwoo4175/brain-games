@@ -223,27 +223,30 @@
 }
 
 /* ---------- Result ---------- */
+/* 결과 화면은 버튼까지 한 화면에 들어와야 한다.
+   폴드 펼친 화면(세로 830)에 "글자 크게"까지 겹치면 자리가 빠듯해서,
+   큰 글씨들은 화면 높이(dvh)에 맞춰 줄어들게 둔다. */
 .result {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 0.8rem;
+  gap: clamp(0.4rem, 1.3dvh, 0.8rem);
   flex: 1;
   justify-content: center;
 }
 .result__headline {
-  font-size: 1.9rem;
+  font-size: clamp(1.35rem, 3.6dvh, 1.9rem);
   font-weight: 800;
 }
 .result__points {
-  font-size: 4rem;
+  font-size: clamp(2.4rem, 7dvh, 4rem);
   font-weight: 800;
   line-height: 1;
   color: var(--primary);
 }
 .result__points small {
-  font-size: 1.4rem;
+  font-size: clamp(1rem, 2.4dvh, 1.4rem);
   color: var(--muted);
 }
 .result__grid {
@@ -257,7 +260,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.1rem;
-  padding: 0.7rem 0.3rem;
+  padding: clamp(0.4rem, 1.1dvh, 0.7rem) 0.3rem;
 }
 .result__stat-value {
   font-size: 1.4rem;
@@ -272,7 +275,7 @@
 .result__best {
   font-weight: 800;
   font-size: 1.1rem;
-  padding: 0.5rem 1rem;
+  padding: clamp(0.3rem, 0.9dvh, 0.5rem) 1rem;
   border-radius: 999px;
   background: var(--surface-2);
 }
@@ -281,36 +284,44 @@
   color: #92400e;
 }
 
-/* ---------- Stats ---------- */
-.stats__week {
+/* 결과: 지난번의 나와 비교 */
+.result__compare {
   display: flex;
-  justify-content: space-between;
-  gap: 0.3rem;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: clamp(0.45rem, 1.2dvh, 0.7rem) 0.8rem;
+  text-align: left;
 }
-.stats__day {
-  flex: 1;
+.result__compare--up {
+  background: var(--correct-bg);
+}
+.result__compare-icon {
+  flex: none;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.result__compare-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.85rem;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.result__compare-main {
+  font-size: 1.05rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.result__compare--up .result__compare-main {
+  color: var(--correct);
+}
+.result__compare-sub {
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--muted);
 }
-.stats__dot {
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 50%;
-  background: var(--line-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-}
-.stats__dot--on {
-  background: var(--correct);
-  color: #fff;
-}
+
+/* ---------- Stats ---------- */
 .stats__game {
   display: grid;
   grid-template-columns: 2.6rem 1fr;
@@ -348,6 +359,65 @@
   color: var(--muted);
   font-weight: 700;
 }
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+.chart__col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+.chart__value {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--muted);
+  line-height: 1.1;
+  min-height: 1.1em;
+}
+/* 막대가 자라는 칸. 높이를 rem 으로 고정해 폴드를 접고 펴도 같은 비율로 보인다. */
+.chart__track {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 5.5rem;
+}
+.chart__bar {
+  width: 100%;
+  border-radius: 0.2rem 0.2rem 0 0;
+  background: var(--primary);
+}
+/* 쉰 날은 값이 아니라 "그날이 있었다"는 자리 표시 */
+.chart__bar--empty {
+  height: 0.15rem;
+  border-radius: 0.1rem;
+  background: var(--line-soft);
+}
+.chart__label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.chart__col--today .chart__value,
+.chart__col--today .chart__label {
+  color: var(--primary);
+}
+.chart__col--today .chart__label {
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 0.15rem;
+}
+.chart__summary {
+  margin-top: 0.6rem;
+  text-align: center;
+}
+
 .stats__empty {
   text-align: center;
   color: var(--muted);

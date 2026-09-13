@@ -18,6 +18,8 @@ import { createRng } from '../shared/rng'
 import { mergeSessions, pickNewerGameSettings } from '../data/sync'
 import { evaluateGoal, makeDailyGoal } from '../engine/dailyGoal'
 import { pickRandomGameId } from '../engine/pickGame'
+import { compareWithPast } from '../engine/compare'
+import { buildWeekly, weeklyMax, weeklySummary } from '../engine/weekly'
 
 describe('초성', () => {
   it('한글 → 초성', () => {
@@ -343,5 +345,127 @@ describe('무작위 게임 고르기', () => {
     const seen = new Set<string>()
     for (let i = 0; i < all.length; i++) seen.add(pickRandomGameId(all, { random: () => i / all.length })!)
     expect(seen.size).toBe(all.length)
+  })
+})
+
+
+/* ---------- 지난번의 나와 비교 ---------- */
+
+const NOW = Date.parse('2026-09-13T12:00:00.000Z')
+const rec = (o: { points: number; correct: number; total: number; agoDays?: number }) => ({
+  id: 'x' + Math.random(),
+  userId: 'u',
+  gameId: 'quick-math',
+  startedAt: new Date(NOW - (o.agoDays ?? 0) * 86400000).toISOString(),
+  durationMs: 60000,
+  levelStart: 2,
+  levelEnd: 2,
+  correct: o.correct,
+  total: o.total,
+  points: o.points,
+})
+
+describe('지난번과 비교', () => {
+  it('이전 기록이 없으면 아무 말도 안 한다', () => {
+    expect(compareWithPast({ points: 100, correct: 8, total: 10 }, [], NOW)).toEqual({ tone: 'none', text: '' })
+  })
+
+  it('문제 수가 같으면 맞힌 문제 수로 비교한다', () => {
+    const c = compareWithPast({ points: 140, correct: 9, total: 10 }, [rec({ points: 100, correct: 7, total: 10 })], NOW)
+    expect(c.tone).toBe('up')
+    expect(c.text).toContain('2문제')
+  })
+
+  it('문제 수가 다르면(시간제 게임) 점수로 비교한다', () => {
+    const c = compareWithPast({ points: 180, correct: 12, total: 14 }, [rec({ points: 150, correct: 10, total: 11 })], NOW)
+    expect(c.tone).toBe('up')
+    expect(c.text).toContain('30점')
+  })
+
+  it('똑같으면 꾸준함을 칭찬한다', () => {
+    const c = compareWithPast({ points: 100, correct: 7, total: 10 }, [rec({ points: 100, correct: 7, total: 10 })], NOW)
+    expect(c.tone).toBe('same')
+  })
+
+  it('내려가도 나무라지 않는다', () => {
+    const c = compareWithPast({ points: 60, correct: 5, total: 10 }, [rec({ points: 100, correct: 8, total: 10 })], NOW)
+    expect(c.tone).toBe('down')
+    expect(c.text).toContain('3문제')
+    // 부정적인 단어가 들어가면 안 됨
+    for (const bad of ['못', '실패', '나빠', '떨어졌']) expect(c.text).not.toContain(bad)
+    // 폴드 화면에서 두 줄로 넘어가지 않게 짧게 유지
+    expect(c.text.length).toBeLessThanOrEqual(16)
+  })
+
+  it('기록이 3판 미만이면 주간 평균은 말하지 않는다', () => {
+    const past = [rec({ points: 100, correct: 7, total: 10 }), rec({ points: 90, correct: 6, total: 10, agoDays: 1 })]
+    expect(compareWithPast({ points: 120, correct: 8, total: 10 }, past, NOW).detail).toBeUndefined()
+  })
+
+  it('최근 7일 평균은 7일 안쪽 기록만으로 낸다', () => {
+    const past = [
+      rec({ points: 100, correct: 7, total: 10, agoDays: 1 }),
+      rec({ points: 100, correct: 7, total: 10, agoDays: 2 }),
+      rec({ points: 100, correct: 7, total: 10, agoDays: 3 }),
+      rec({ points: 9999, correct: 10, total: 10, agoDays: 30 }), // 오래된 판은 빠져야 함
+    ]
+    const c = compareWithPast({ points: 200, correct: 9, total: 10 }, past, NOW)
+    expect(c.detail).toBe('최근 7일 평균 100점보다 높아요 👍')
+  })
+
+  it('평균과 10% 안쪽이면 비슷하다고 한다', () => {
+    const past = [
+      rec({ points: 100, correct: 7, total: 10, agoDays: 1 }),
+      rec({ points: 100, correct: 7, total: 10, agoDays: 2 }),
+      rec({ points: 100, correct: 7, total: 10, agoDays: 3 }),
+    ]
+    expect(compareWithPast({ points: 105, correct: 7, total: 10 }, past, NOW).detail).toContain('비슷해요')
+  })
+})
+
+/* ---------- 주간 그래프 ---------- */
+
+describe('주간 집계', () => {
+  const today = '2026-09-13'
+  const at = (day: string, points: number) => ({
+    id: 'w' + day + points, userId: 'u', gameId: 'stroop',
+    startedAt: `${day}T09:00:00.000Z`, durationMs: 60000,
+    levelStart: 1, levelEnd: 1, correct: 5, total: 6, points,
+  })
+
+  it('오늘이 맨 오른쪽인 7칸을 만든다', () => {
+    const week = buildWeekly([], today)
+    expect(week).toHaveLength(7)
+    expect(week[6].key).toBe(today)
+    expect(week[6].isToday).toBe(true)
+    expect(week[0].key).toBe('2026-09-07')
+    expect(week.filter((d) => d.isToday)).toHaveLength(1)
+  })
+
+  it('같은 날 여러 판은 점수를 더한다', () => {
+    const week = buildWeekly([at(today, 120), at(today, 80)], today)
+    expect(week[6].points).toBe(200)
+    expect(week[6].plays).toBe(2)
+  })
+
+  it('7일 밖 기록은 어느 칸에도 안 들어간다', () => {
+    const week = buildWeekly([at('2026-08-01', 500)], today)
+    expect(week.every((d) => d.points === 0)).toBe(true)
+  })
+
+  it('안 한 날은 0', () => {
+    const week = buildWeekly([at('2026-09-11', 300)], today)
+    expect(week.find((d) => d.key === '2026-09-11')!.points).toBe(300)
+    expect(week.find((d) => d.key === '2026-09-12')!.points).toBe(0)
+  })
+
+  it('전부 0이어도 0으로 나누지 않는다', () => {
+    expect(weeklyMax(buildWeekly([], today))).toBe(1)
+  })
+
+  it('요약 문구', () => {
+    expect(weeklySummary(buildWeekly([], today))).toContain('아직 기록이 없어요')
+    const week = buildWeekly([at(today, 120), at('2026-09-11', 80)], today)
+    expect(weeklySummary(week)).toBe('최근 7일 중 2일 운동 · 모두 200점')
   })
 })

@@ -73,7 +73,7 @@ src/
 ## 로드맵 (설계 시 합의)
 
 1. ✅ 1단계: 4개 게임(거꾸로 숫자·지는 가위바위보·빠른 암산·초성 퀴즈) + 로컬 저장 + 적응 난이도 + PWA + GitHub Pages
-2. 2단계: 통계 강화(주간 그래프), 소리·진동 다듬기. 오늘의 목표 ✅ (`engine/dailyGoal.ts` — 날짜별 고정, 홈 상단 카드), 매일 푸시 알림 ✅ (`docs/NOTIFICATIONS.md`). 게임 추가는 완료 ✅ (스트룹 · 카드 짝 맞추기 · 숫자 순서 터치 · 사이먼 · 다른 것 찾기 · 시계 읽기). 남은 후보: 오늘의 지남력 체크(날짜·요일 출석 확인, 게임보다는 홈/콘텐츠 슬롯 성격)
+2. 2단계: 통계 강화 — 주간 그래프 ✅ (`engine/weekly.ts`, 기록 화면 최근 7일 막대), 결과 화면에서 지난번의 나와 비교 ✅ (`engine/compare.ts`). 소리·진동 다듬기. 오늘의 목표 ✅ (`engine/dailyGoal.ts` — 날짜별 고정, 홈 상단 카드), 매일 푸시 알림 ✅ (`docs/NOTIFICATIONS.md`). 게임 추가는 완료 ✅ (스트룹 · 카드 짝 맞추기 · 숫자 순서 터치 · 사이먼 · 다른 것 찾기 · 시계 읽기). 남은 후보: 오늘의 지남력 체크(날짜·요일 출석 확인, 게임보다는 홈/콘텐츠 슬롯 성격)
 3. 3단계: Supabase + 소셜 로그인 — 코드·서버 스키마 완료 ✅ (`SupabaseSyncAdapter`, `SupabaseAuth`, 익명 기록 병합, 프로젝트 `fnqmizlykcmuigyldzre` 테이블+RLS 적용, `.env.production` 연결). **구글 로그인**을 씁니다 (카카오는 Supabase가 `account_email` 을 강제 요청하는데 그건 비즈 앱 전용이라 KOE205 로 막힘). 남은 것은 구글 OAuth 콘솔 설정뿐 — `docs/SUPABASE_SETUP.md`
 4. 4단계: 콘텐츠 슬롯에 협찬 카드 + 회상 문제(광고 회상률 모델), 필요 시 Capacitor/TWA로 앱 출시
 

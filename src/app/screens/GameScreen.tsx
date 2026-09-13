@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { compareWithPast, type Comparison } from '../../engine/compare'
 import type { AnyGame } from '../../engine/types'
 import { useSession, type SessionSummary } from '../../engine/useSession'
 import { formatSeconds } from '../../shared/format'
@@ -15,6 +16,8 @@ interface ResultInfo extends SessionSummary {
   previousBest: number
   /** 이 게임을 처음 플레이했나 (이전 기록 없음) */
   isFirstPlay: boolean
+  /** 지난번의 나와 비교 */
+  comparison: Comparison
 }
 
 /** 화면이 꺼지지 않게 (지원 브라우저에서만) */
@@ -62,7 +65,11 @@ export function GameScreen({ game, onExit }: Props) {
         details: { avgResponseMs: Math.round(summary.score.avgResponseMs) },
       })
       await setLevel(game.id, summary.levelEnd)
-      setResult({ ...summary, previousBest, isFirstPlay: prev.length === 0 })
+      const comparison = compareWithPast(
+        { points: summary.score.points, correct: summary.score.correct, total: summary.score.total },
+        prev,
+      )
+      setResult({ ...summary, previousBest, isFirstPlay: prev.length === 0, comparison })
     },
     [storage, user.userId, game.id, setLevel],
   )
@@ -133,7 +140,7 @@ function SessionView({
   }
 
   if (state.phase === 'done' && result) {
-    const { score, levelStart, levelEnd, previousBest, isFirstPlay } = result
+    const { score, levelStart, levelEnd, previousBest, isFirstPlay, comparison } = result
     const acc = Math.round(score.accuracy * 100)
     const headline = acc >= 80 ? '훌륭해요! 🎉' : acc >= 50 ? '잘하셨어요! 👏' : '수고하셨어요! 🙂'
     const isNewBest = !isFirstPlay && score.points > previousBest && score.points > 0
@@ -149,6 +156,18 @@ function SessionView({
           <div className={`result__best${isNewBest ? ' result__best--new' : ''}`}>
             {isFirstPlay ? '첫 기록이에요!' : isNewBest ? '🏆 최고 기록 갱신!' : previousBest > 0 ? `최고 기록 ${previousBest}점` : '다음엔 더 잘될 거예요!'}
           </div>
+          {comparison.tone !== 'none' && (
+            <div className={`card result__compare result__compare--${comparison.tone}`}>
+              <span className="result__compare-icon" aria-hidden>
+                {comparison.tone === 'up' ? '📈' : comparison.tone === 'same' ? '🤝' : '🌱'}
+              </span>
+              <span className="result__compare-text">
+                <span className="result__compare-main">{comparison.text}</span>
+                {comparison.detail && <span className="result__compare-sub">{comparison.detail}</span>}
+              </span>
+            </div>
+          )}
+
           <div className="result__grid">
             <Card className="result__stat">
               <span className="result__stat-value">
